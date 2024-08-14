@@ -31,6 +31,8 @@ variable "vm_size" {
   default     = "Standard_DS2_v2"
 }
 
+variable "vnet_subnet_id" {}
+
 variable "tags" {
   description = "Tags for the resources"
   type        = map(string)

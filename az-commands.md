@@ -407,3 +407,10 @@ ssh-keygen -t rsa -b 4096 -C "azurekey" -N "" -f azurekey
 cd -
 az sshkey create --name yuli-key --public-key @~/.ssh/azurekey.pub
 ```
+
+## In bastion box
+```
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+aksadmin@aks-default-40943090-vmss000000:~$ az account show
+Please run 'az login' to setup account.
+```

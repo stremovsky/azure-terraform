@@ -2,16 +2,45 @@ provider "azurerm" {
   features {}
 }
 
+resource "azurerm_resource_group" "rg" {
+  name     = var.resource_group_name
+  location = var.location
+}
+
+module "vnet" {
+  source              = "./modules/vnet"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+
+  #vnet_cidr           = "10.0.0.0/16"
+  vnet_cidr           = "10.224.0.0/12"
+  aks_subnet_cidr     = "10.224.0.0/24"
+  bastion_subnet_cidr = "10.224.1.0/24"
+}
+
+# Create AKS cluster
 module "aks_cluster" {
   count               = var.aks_enabled ? 1 : 0
   source              = "./modules/aks"
-  resource_group_name = var.resource_group_name
-  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
   aks_cluster_name    = var.aks_cluster_name
   dns_prefix          = var.dns_prefix
   node_count          = var.node_count
   vm_size             = var.vm_size
+  vnet_subnet_id      = module.vnet.aks_subnet_id
   tags                = var.tags
+}
+
+# Create Bastion host
+module "bastion" {
+  count               = var.enable_bastion ? 1 : 0
+  source              = "./modules/bastion"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+
+  # Networking
+  vnet_subnet_id = module.vnet.bastion_subnet_id
 }
 
 # Write the kubeconfig to a file (optional)

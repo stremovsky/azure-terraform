@@ -42,6 +42,12 @@ variable "vm_size" {
   default     = "Standard_DS2_v2"
 }
 
+variable "enable_bastion" {
+  description = "Enable/disable Bastion host"
+  type        = bool
+  default     = true
+}
+
 variable "tags" {
   description = "Tags for the resources"
   type        = map(string)
