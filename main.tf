@@ -51,6 +51,7 @@ module "bastion" {
 module "nsg" {
   count               = var.enable_nsg ? 1 : 0
   source              = "./modules/nsg"
+  resourse_name       = "nsg-sg"
   resource_group_name = azurerm_resource_group.rg.name
   #resource_group_name = module.aks_cluster[0].node_resource_group
   location = azurerm_resource_group.rg.location
@@ -63,6 +64,7 @@ module "nsg" {
 module "nsg_aks_subnet" {
   count               = var.enable_nsg ? 1 : 0
   source              = "./modules/nsg"
+  resourse_name       = "nsg-sg-ask"
   resource_group_name = module.aks_cluster[0].node_resource_group
   location            = azurerm_resource_group.rg.location
 

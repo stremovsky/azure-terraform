@@ -12,3 +12,7 @@ variable "location" {
 variable "aks_subnet_id" {
   type = string
 }
+
+variable "resourse_name" {
+  type = string
+}
