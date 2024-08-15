@@ -6,6 +6,12 @@ variable "aks_enabled" {
   default     = true
 }
 
+variable "enable_node_public_ip" {
+  description = "Flag to enable or disable public IP assigned to kunernetes nodes"
+  type        = bool
+  default     = true
+}
+
 variable "resource_group_name" {
   description = "Name of the resource group"
   type        = string
@@ -36,6 +42,18 @@ variable "node_count" {
   default     = 1
 }
 
+variable "min_count" {
+  description = "Minimal number of nodes in the default node pool"
+  type        = number
+  default     = 1
+}
+
+variable "max_count" {
+  description = "Maximal number of nodes in the default node pool"
+  type        = number
+  default     = 1
+}
+
 variable "vm_size" {
   description = "VM size for the nodes in the default node pool"
   type        = string
@@ -45,7 +63,7 @@ variable "vm_size" {
 variable "enable_bastion" {
   description = "Enable/disable Bastion host"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "tags" {

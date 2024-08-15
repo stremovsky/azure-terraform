@@ -6,7 +6,12 @@ variable "resource_group_name" {
 variable "location" {
   description = "Azure region to deploy resources"
   type        = string
-  default     = "East US"
+  default     = "East US 2"
+}
+
+variable "enable_node_public_ip" {
+  type    = bool
+  default = false
 }
 
 variable "aks_cluster_name" {
@@ -20,9 +25,18 @@ variable "dns_prefix" {
 }
 
 variable "node_count" {
-  description = "Number of nodes in the default node pool"
-  type        = number
-  default     = 1
+  type    = number
+  default = 1
+}
+
+variable "min_count" {
+  type    = number
+  default = 1
+}
+
+variable "max_count" {
+  type    = number
+  default = 3
 }
 
 variable "vm_size" {

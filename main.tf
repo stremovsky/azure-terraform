@@ -9,8 +9,8 @@ resource "azurerm_resource_group" "rg" {
 
 module "vnet" {
   source              = "./modules/vnet"
-  resource_group_name = var.resource_group_name
-  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 
   #vnet_cidr           = "10.0.0.0/16"
   vnet_cidr           = "10.224.0.0/12"
@@ -20,16 +20,19 @@ module "vnet" {
 
 # Create AKS cluster
 module "aks_cluster" {
-  count               = var.aks_enabled ? 1 : 0
-  source              = "./modules/aks"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-  aks_cluster_name    = var.aks_cluster_name
-  dns_prefix          = var.dns_prefix
-  node_count          = var.node_count
-  vm_size             = var.vm_size
-  vnet_subnet_id      = module.vnet.aks_subnet_id
-  tags                = var.tags
+  count                 = var.aks_enabled ? 1 : 0
+  source                = "./modules/aks"
+  resource_group_name   = azurerm_resource_group.rg.name
+  location              = azurerm_resource_group.rg.location
+  enable_node_public_ip = var.enable_node_public_ip
+  aks_cluster_name      = var.aks_cluster_name
+  dns_prefix            = var.dns_prefix
+  node_count            = var.node_count
+  min_count             = var.min_count
+  max_count             = var.max_count
+  vm_size               = var.vm_size
+  vnet_subnet_id        = module.vnet.aks_subnet_id
+  tags                  = var.tags
 }
 
 # Create Bastion host

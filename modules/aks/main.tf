@@ -10,15 +10,14 @@ resource "azurerm_kubernetes_cluster" "aks" {
     node_count                  = var.node_count
     vm_size                     = var.vm_size
     os_disk_size_gb             = 40
-    enable_node_public_ip       = false
+    enable_node_public_ip       = var.enable_node_public_ip
     temporary_name_for_rotation = "akstemppool"
+    enable_auto_scaling         = true
+    max_count                   = var.min_count
+    min_count                   = var.max_count
 
     os_disk_type = "Managed"
     os_sku       = "Ubuntu"
-
-    enable_auto_scaling = true
-    max_count           = 3
-    min_count           = 1
 
     node_labels = {
       "ssh-access" = "true"

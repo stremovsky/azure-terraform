@@ -1,15 +1,15 @@
 
 resource "azurerm_public_ip" "bastion_ip" {
-  name       = "bastion-public-ip"
-  location   = var.location
+  name                = "bastion-public-ip"
+  location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
-  sku                = "Standard"
+  sku                 = "Standard"
 }
 
 resource "azurerm_bastion_host" "bastion" {
-  name       = "my-bastion"
-  location   = var.location
+  name                = "my-bastion"
+  location            = var.location
   resource_group_name = var.resource_group_name
 
   ip_configuration {
