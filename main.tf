@@ -11,6 +11,7 @@ module "vnet" {
   source              = "./modules/vnet"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
+  enable_bastion      = var.enable_bastion
 
   #vnet_cidr           = "10.0.0.0/16"
   vnet_cidr           = "10.224.0.0/12"
@@ -45,6 +46,30 @@ module "bastion" {
   # Networking
   vnet_subnet_id = module.vnet.bastion_subnet_id
 }
+
+# Allow SSH, ICMP
+module "nsg" {
+  count               = var.enable_nsg ? 1 : 0
+  source              = "./modules/nsg"
+  resource_group_name = azurerm_resource_group.rg.name
+  #resource_group_name = module.aks_cluster[0].node_resource_group
+  location = azurerm_resource_group.rg.location
+
+  # Networking
+  aks_subnet_id = module.vnet.aks_subnet_id
+}
+
+# Allow SSH, ICMP
+module "nsg_aks_subnet" {
+  count               = var.enable_nsg ? 1 : 0
+  source              = "./modules/nsg"
+  resource_group_name = module.aks_cluster[0].node_resource_group
+  location            = azurerm_resource_group.rg.location
+
+  # Networking
+  aks_subnet_id = module.vnet.aks_subnet_id
+}
+
 
 # Write the kubeconfig to a file (optional)
 resource "local_file" "kubeconfig" {

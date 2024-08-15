@@ -13,6 +13,7 @@ resource "azurerm_subnet" "aks_subnet" {
 }
 
 resource "azurerm_subnet" "bastion_subnet" {
+  count                = var.enable_bastion ? 1 : 0
   name                 = "AzureBastionSubnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name

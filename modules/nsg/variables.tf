@@ -6,9 +6,9 @@ variable "resource_group_name" {
 variable "location" {
   description = "Azure region to deploy resources"
   type        = string
+  default     = "East US 2"
 }
 
-variable "enable_bastion" {}
-variable "vnet_cidr" {}
-variable "aks_subnet_cidr" {}
-variable "bastion_subnet_cidr" {}
+variable "aks_subnet_id" {
+  type = string
+}

@@ -3,6 +3,10 @@ output "aks_cluster_name" {
   value       = azurerm_kubernetes_cluster.aks.name
 }
 
+output "node_resource_group" {
+  value = azurerm_kubernetes_cluster.aks.node_resource_group
+}
+
 output "kube_config" {
   description = "The Kubernetes config to access the AKS cluster"
   value       = azurerm_kubernetes_cluster.aks.kube_config_raw

@@ -12,6 +12,18 @@ variable "enable_node_public_ip" {
   default     = true
 }
 
+variable "enable_bastion" {
+  description = "Enable/disable Bastion host"
+  type        = bool
+  default     = false
+}
+
+variable "enable_nsg" {
+  description = "Enable/disable nsg ssh access"
+  type        = bool
+  default     = true
+}
+
 variable "resource_group_name" {
   description = "Name of the resource group"
   type        = string
@@ -58,12 +70,6 @@ variable "vm_size" {
   description = "VM size for the nodes in the default node pool"
   type        = string
   default     = "Standard_DS2_v2"
-}
-
-variable "enable_bastion" {
-  description = "Enable/disable Bastion host"
-  type        = bool
-  default     = false
 }
 
 variable "tags" {
