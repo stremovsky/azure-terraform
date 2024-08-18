@@ -21,6 +21,16 @@ variable "enable_bastion" {
 variable "enable_nsg" {
   description = "Enable/disable nsg ssh access"
   type        = bool
+  default     = false
+}
+
+variable "create_aks_resource_group" {
+  type        = bool
+  default     = true
+}
+
+variable "create_node_resource_group" {
+  type        = bool
   default     = true
 }
 

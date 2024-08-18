@@ -3,6 +3,11 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "node_resource_group" {
+  description = "Name of the resource group fopr kubernetes resources"
+  type        = string
+}
+
 variable "location" {
   description = "Azure region to deploy resources"
   type        = string
