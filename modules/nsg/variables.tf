@@ -1,12 +1,13 @@
+variable "aks_resource_group_name" {
+  type        = string
+}
+
 variable "resource_group_name" {
-  description = "Name of the resource group"
   type        = string
 }
 
 variable "location" {
-  description = "Azure region to deploy resources"
   type        = string
-  default     = "East US 2"
 }
 
 variable "aks_subnet_id" {
