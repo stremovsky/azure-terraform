@@ -3,7 +3,6 @@
 az login
 ```
 
-
 Output:
 ```
 a83e4e63-bd59-4a9a-83fe-6c0b18d16817 '2bcloud'
@@ -20,6 +19,11 @@ Select a subscription and tenant (Type a number or Enter for no changes):
 
 Tenant: 2bcloud Sandbox
 Subscription: sandbox26/06/23 (cac54a74-04fe-4cbf-91d0-dd16f5fd89bd)
+```
+
+Login to specific domain
+```
+az login --tenant pictimeprod.onmicrosoft.com
 ```
 
 ## Account info

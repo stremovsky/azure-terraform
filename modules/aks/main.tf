@@ -30,12 +30,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
     #}
   }
 
-  #network_profile {
-  #  network_plugin    = "azure"
-  #  #load_balancer_sku = "Standard"
-  #  network_policy    = "calico"
-  #  service_cidr        = "10.51.0.0/24"
-  #}
+  network_profile {
+    network_plugin    = "azure"
+    load_balancer_sku = "standard"
+    network_policy    = "azure"
+  }
 
   identity {
     type = "SystemAssigned"
@@ -50,4 +49,14 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   tags = var.tags
+}
+
+resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
+  name                  = "windowspool"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
+  vm_size               = "Standard_D2_v2"
+  node_count            = 1
+  os_disk_size_gb       = 100
+  os_type               = "Windows"
+  vnet_subnet_id        = var.vnet_subnet_id
 }

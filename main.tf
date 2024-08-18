@@ -26,14 +26,21 @@ data "azurerm_resource_group" "node_rg" {
 }
 
 module "vnet" {
-  source              = "./modules/vnet"
-  resource_group_name = data.azurerm_resource_group.aks_rg.name
+  source = "./modules/vnet"
+  #resource_group_name = data.azurerm_resource_group.aks_rg.name
+  resource_group_name = length(var.vnet_resource_group_name) > 0 ? var.vnet_resource_group_name : data.azurerm_resource_group.aks_rg.name
   location            = data.azurerm_resource_group.aks_rg.location
   enable_bastion      = var.enable_bastion
+  create_subnet       = var.create_subnet
+  create_vnet         = var.create_vnet
 
-  #vnet_cidr           = "10.0.0.0/16"
-  vnet_cidr           = "10.224.0.0/12"
-  aks_subnet_cidr     = "10.224.0.0/24"
+  vnet_name   = var.vnet_name
+  vnet_cidr   = "10.0.0.0/16"
+  subnet_name = "kubernetes-eus1-playground"
+  #vnet_cidr           = "10.224.0.0/12"
+  #vnet_subnet_id
+  #aks_subnet_cidr     = "10.224.0.0/24"
+  aks_subnet_cidr     = "10.0.36.0/22"
   bastion_subnet_cidr = "10.224.1.0/24"
 }
 
@@ -73,7 +80,8 @@ module "nsg" {
   resourse_name       = "nsg-sg"
   resource_group_name = data.azurerm_resource_group.aks_rg.name
   #resource_group_name = module.aks_cluster[0].node_resource_group
-  aks_resource_group_name = module.aks_cluster[0].node_resource_group
+  #aks_resource_group_name = module.aks_cluster[0].node_resource_group
+  aks_resource_group_name = data.azurerm_resource_group.node_rg.name
   location                = data.azurerm_resource_group.aks_rg.location
 
   # Networking
