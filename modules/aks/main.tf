@@ -58,8 +58,8 @@ resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
   vm_size               = "Standard_D2_v2"
   os_disk_size_gb       = 100
   os_type               = var.app_os_type
-  max_count             = var.app_min_count
-  min_count             = var.app_max_count
+  max_count             = var.app_max_count
+  min_count             = var.app_min_count
   node_count            = var.app_node_count
   vnet_subnet_id        = var.vnet_subnet_id
 }
