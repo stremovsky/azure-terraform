@@ -24,38 +24,65 @@ variable "enable_nsg" {
   default     = false
 }
 
+variable "create_vnet" {
+  type    = bool
+  default = false
+}
+
+variable "create_subnet" {
+  type    = bool
+  default = false
+}
+
 variable "create_aks_resource_group" {
-  type        = bool
-  default     = true
+  type    = bool
+  default = false
 }
 
 variable "create_node_resource_group" {
-  type        = bool
-  default     = true
+  type    = bool
+  default = false
 }
 
 variable "resource_group_name" {
   description = "Name of the resource group"
   type        = string
-  default     = "myResourceGroup"
+  default     = "kubernetes-eus1-playground"
+}
+
+variable "vnet_name" {
+  description = "Vnet resource name"
+  type        = string
+  #default     = "PictimeNetEUS1"
+}
+
+variable "vnet_resource_group_name" {
+  description = "Name of the resource group if existing vnet is used"
+  type        = string
+  #default     = "PictimeEUS1"
+}
+
+variable "registry_name" {
+  type    = string
+  default = "registry1"
 }
 
 variable "location" {
   description = "Azure region to deploy resources"
   type        = string
-  default     = "westus2"
+  default     = "westus"
 }
 
 variable "aks_cluster_name" {
   description = "Name of the AKS cluster"
   type        = string
-  default     = "myAKSCluster"
+  default     = "kubernetes-eus1-playground"
 }
 
 variable "dns_prefix" {
   description = "DNS prefix for the AKS cluster"
   type        = string
-  default     = "myakscluster"
+  default     = "akstesting"
 }
 
 variable "node_count" {

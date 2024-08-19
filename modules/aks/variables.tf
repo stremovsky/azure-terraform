@@ -29,19 +29,39 @@ variable "dns_prefix" {
   type        = string
 }
 
-variable "node_count" {
+variable "system_node_count" {
   type    = number
   default = 1
 }
 
-variable "min_count" {
+variable "system_min_count" {
   type    = number
   default = 1
 }
 
-variable "max_count" {
+variable "system_max_count" {
   type    = number
   default = 3
+}
+
+variable "app_os_type" {
+  type    = string
+  default = "Windows"
+}
+
+variable "app_node_count" {
+  type    = number
+  default = 1
+}
+
+variable "app_min_count" {
+  type    = number
+  default = 1
+}
+
+variable "app_max_count" {
+  type    = number
+  default = 10
 }
 
 variable "vm_size" {
@@ -53,6 +73,10 @@ variable "vm_size" {
 variable "vnet_subnet_id" {
   type = string
 }
+
+variable "service_cidr" {}
+variable "dns_service_ip" {}
+variable "pod_cidr" {}
 
 variable "tags" {
   description = "Tags for the resources"
