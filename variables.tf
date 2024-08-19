@@ -100,7 +100,7 @@ variable "min_count" {
 variable "max_count" {
   description = "Maximal number of nodes in the default node pool"
   type        = number
-  default     = 1
+  default     = 10
 }
 
 variable "vm_size" {

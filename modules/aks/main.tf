@@ -9,8 +9,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
   default_node_pool {
     name                        = "default"
     node_count                  = var.system_node_count
-    max_count                   = var.system_min_count
-    min_count                   = var.system_max_count
+    max_count                   = var.system_max_count
+    min_count                   = var.system_min_count
     vm_size                     = var.vm_size
     os_disk_size_gb             = 40
     enable_node_public_ip       = var.enable_node_public_ip
