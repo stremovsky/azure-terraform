@@ -22,3 +22,7 @@ output "kube_admin_config" {
   value       = azurerm_kubernetes_cluster.aks.kube_admin_config_raw
   sensitive   = true
 }
+
+output "oidc_issuer_url" {
+  value = azurerm_kubernetes_cluster.aks.oidc_issuer_url
+}

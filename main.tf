@@ -77,10 +77,18 @@ module "registry" {
 
 module "keyvault" {
   source                  = "./modules/keyvault"
-  keyvault_name           = "keyvault1"
+  keyvault_name           = "kuber-keyvault-test1"
   resource_group_name     = data.azurerm_resource_group.aks_rg.name
   location                = data.azurerm_resource_group.aks_rg.location
   aks_kubelet_identity_id = module.aks_cluster[0].aks_kubelet_identity_id
+}
+
+module "identity" {
+  source              = "./modules/identity"
+  location            = data.azurerm_resource_group.aks_rg.location
+  keyvault_id         = module.keyvault.keyvault_id
+  resource_group_name = data.azurerm_resource_group.aks_rg.name
+  oidc_issuer_url     = module.aks_cluster[0].oidc_issuer_url
 }
 
 # Create Bastion host

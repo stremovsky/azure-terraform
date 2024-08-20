@@ -30,7 +30,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     network_plugin      = "azure"
     load_balancer_sku   = "standard"
     network_policy      = "azure"
-    network_plugin_mode = "Overlay"
+    network_plugin_mode = "overlay"
     service_cidr        = var.service_cidr
     dns_service_ip      = var.dns_service_ip
     pod_cidr            = var.pod_cidr
@@ -39,6 +39,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
   identity {
     type = "SystemAssigned"
   }
+  # Enable OIDC issuer URL
+  oidc_issuer_enabled = true
+  # Enable Azure AD Workload Identity
+  workload_identity_enabled = true
 
   linux_profile {
     admin_username = "aksadmin"
@@ -46,6 +50,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     ssh_key {
       key_data = file("~/.ssh/azurekey.pub")
     }
+  }
+
+  key_vault_secrets_provider {
+    secret_rotation_enabled = true
   }
 
   tags = var.tags
