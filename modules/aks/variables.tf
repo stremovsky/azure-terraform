@@ -19,7 +19,7 @@ variable "enable_node_public_ip" {
   default = false
 }
 
-variable "aks_cluster_name" {
+variable "cluster_name" {
   description = "Name of the AKS cluster"
   type        = string
 }

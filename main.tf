@@ -58,7 +58,7 @@ module "aks_cluster" {
   node_resource_group   = "MC_${var.resource_group_name}"
   location              = data.azurerm_resource_group.aks_rg.location
   enable_node_public_ip = var.enable_node_public_ip
-  aks_cluster_name      = var.aks_cluster_name
+  cluster_name          = var.cluster_name
   dns_prefix            = var.dns_prefix
   vm_size               = var.vm_size
   vnet_subnet_id        = module.vnet.aks_subnet_id

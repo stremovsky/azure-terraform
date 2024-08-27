@@ -1,5 +1,5 @@
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                    = var.aks_cluster_name
+  name                    = var.cluster_name
   location                = var.location
   dns_prefix              = var.dns_prefix
   resource_group_name     = var.resource_group_name
@@ -7,7 +7,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
   private_cluster_enabled = var.aks_private
 
   default_node_pool {
-    os_disk_size_gb             = 40
     name                        = "default"
     vm_size                     = var.vm_size
     min_count                   = var.system_min_count
@@ -16,14 +15,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
     enable_node_public_ip       = var.enable_node_public_ip
     temporary_name_for_rotation = "akstemppool"
     enable_auto_scaling         = true
+    vnet_subnet_id              = var.vnet_subnet_id
 
-    os_sku       = "Ubuntu"
-    os_disk_type = "Managed"
-
-    node_labels = {
-      "ssh-access" = "true"
-    }
-    vnet_subnet_id = var.vnet_subnet_id
+    os_sku          = "Ubuntu"
+    os_disk_type    = "Managed"
+    os_disk_size_gb = 40
   }
 
   network_profile {

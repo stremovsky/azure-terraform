@@ -1,5 +1,5 @@
-output "aks_cluster_name" {
-  value = module.aks_cluster[0].aks_cluster_name
+output "cluster_name" {
+  value = module.aks_cluster[0].cluster_name
 }
 
 output "aks_oidc_issuer_url" {
