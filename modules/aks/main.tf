@@ -1,24 +1,24 @@
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                = var.aks_cluster_name
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  dns_prefix          = var.dns_prefix
-  node_resource_group = var.node_resource_group
-  #private_cluster_enabled = true
+  name                    = var.aks_cluster_name
+  location                = var.location
+  dns_prefix              = var.dns_prefix
+  resource_group_name     = var.resource_group_name
+  node_resource_group     = var.node_resource_group
+  private_cluster_enabled = var.aks_private
 
   default_node_pool {
-    name                        = "default"
-    node_count                  = var.system_node_count
-    max_count                   = var.system_max_count
-    min_count                   = var.system_min_count
-    vm_size                     = var.vm_size
     os_disk_size_gb             = 40
+    name                        = "default"
+    vm_size                     = var.vm_size
+    min_count                   = var.system_min_count
+    max_count                   = var.system_max_count
+    node_count                  = var.system_node_count
     enable_node_public_ip       = var.enable_node_public_ip
     temporary_name_for_rotation = "akstemppool"
     enable_auto_scaling         = true
 
-    os_disk_type = "Managed"
     os_sku       = "Ubuntu"
+    os_disk_type = "Managed"
 
     node_labels = {
       "ssh-access" = "true"
@@ -31,9 +31,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     load_balancer_sku   = "standard"
     network_policy      = "azure"
     network_plugin_mode = "overlay"
+    pod_cidr            = var.pod_cidr
     service_cidr        = var.service_cidr
     dns_service_ip      = var.dns_service_ip
-    pod_cidr            = var.pod_cidr
+
   }
 
   identity {
@@ -44,11 +45,20 @@ resource "azurerm_kubernetes_cluster" "aks" {
   # Enable Azure AD Workload Identity
   workload_identity_enabled = true
 
-  linux_profile {
-    admin_username = "aksadmin"
+  #linux_profile {
+  #  admin_username = "aksadmin"
+  #  ssh_key {
+  #    key_data = file(var.ssh_key_file)
+  #  }
+  #}
 
-    ssh_key {
-      key_data = file("~/.ssh/azurekey.pub")
+  dynamic "linux_profile" {
+    for_each = length(var.ssh_key_file) > 0 ? [true] : []
+    content {
+      admin_username = "aksadmin"
+      ssh_key {
+        key_data = file(var.ssh_key_file)
+      }
     }
   }
 

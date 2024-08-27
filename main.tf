@@ -66,6 +66,7 @@ module "aks_cluster" {
   service_cidr          = "172.16.16.0/24"
   dns_service_ip        = "172.16.16.10"
   pod_cidr              = "172.16.0.0/20"
+  ssh_key_file          = "~/.ssh/azurekey.pub"
 }
 
 module "registry" {

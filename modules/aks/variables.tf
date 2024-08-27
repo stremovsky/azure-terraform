@@ -24,9 +24,21 @@ variable "aks_cluster_name" {
   type        = string
 }
 
+variable "aks_private" {
+  description = "Make private or public cluster"
+  type        = bool
+  default     = false
+}
+
 variable "dns_prefix" {
   description = "DNS prefix for the AKS cluster"
   type        = string
+}
+
+variable "ssh_key_file" {
+  description = "Path to the SSH public key file"
+  type        = string
+  default     = ""
 }
 
 variable "system_node_count" {
