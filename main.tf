@@ -63,9 +63,9 @@ module "aks_cluster" {
   vm_size               = var.vm_size
   vnet_subnet_id        = module.vnet.aks_subnet_id
   tags                  = var.tags
-  service_cidr          = "10.120.0.0/24"
-  dns_service_ip        = "10.120.0.10"
-  pod_cidr              = "192.168.0.0/16"
+  service_cidr          = "172.16.16.0/24"
+  dns_service_ip        = "172.16.16.10"
+  pod_cidr              = "172.16.0.0/20"
 }
 
 module "registry" {

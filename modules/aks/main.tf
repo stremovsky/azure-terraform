@@ -63,11 +63,14 @@ resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
   name                  = "wipool"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
   enable_auto_scaling   = true
-  vm_size               = "Standard_D2_v2"
+  vm_size               = "Standard_D4_v5"
   os_disk_size_gb       = 100
   os_type               = var.app_os_type
   max_count             = var.app_max_count
   min_count             = var.app_min_count
   node_count            = var.app_node_count
   vnet_subnet_id        = var.vnet_subnet_id
+  node_labels = {
+    "download" = "true"
+  }
 }

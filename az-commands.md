@@ -418,3 +418,130 @@ curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 aksadmin@aks-default-40943090-vmss000000:~$ az account show
 Please run 'az login' to setup account.
 ```
+
+## Helm
+```
+brew install helm
+helm repo add azure-workload-identity https://azure.github.io/azure-workload-identity/charts
+helm repo update
+helm install -n azure-workload-identity-system authhook azure-workload-identity/workload-identity-webhook  --set azureTenantID=aecd8c94-86d9-4f32-a658-5b9692b6e7c6  --create-namespace
+
+helm install -n azure-workload-identity-system authhook azure-workload-identity/workload-identity-webhook  --set azureTenantID=aecd8c94-86d9-4f32-a658-5b9692b6e7c6  --namespace kube-system
+
+```
+
+## Install ingres
+```
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm install ingress-nginx ingress-nginx/ingress-nginx --namespace default
+helm upgrade ingress-nginx ingress-nginx/ingress-nginx --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"="/healthz"
+
+```
+
+service.beta.kubernetes.io/azure-load-balancer-internal
+service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path
+
+
+
+--set
+
+helm install ingress-nginx ingress-nginx/ingress-nginx --namespace default
+
+WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /Users/yuli/.kube/config
+WARNING: Kubernetes configuration file is world-readable. This is insecure. Location: /Users/yuli/.kube/config
+NAME: ingress-nginx
+LAST DEPLOYED: Wed Aug 21 12:43:37 2024
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+The ingress-nginx controller has been installed.
+It may take a few minutes for the load balancer IP to be available.
+You can watch the status by running 'kubectl get service --namespace default ingress-nginx-controller --output wide --watch'
+
+An example Ingress that makes use of the controller:
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: example
+    namespace: foo
+  spec:
+    ingressClassName: nginx
+    rules:
+      - host: www.example.com
+        http:
+          paths:
+            - pathType: Prefix
+              backend:
+                service:
+                  name: exampleService
+                  port:
+                    number: 80
+              path: /
+    # This section is only required if TLS is to be enabled for the Ingress
+    tls:
+      - hosts:
+        - www.example.com
+        secretName: example-tls
+
+If TLS is enabled for the Ingress, a Secret containing the certificate and key must also be provided:
+
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: example-tls
+    namespace: foo
+  data:
+    tls.crt: <base64 encoded cert>
+    tls.key: <base64 encoded key>
+  type: kubernetes.io/tls
+
+## Install cert-manager
+```
+helm repo add jetstack https://charts.jetstack.io --force-update
+helm install cert-manager jetstack/cert-manager  --namespace default --version v1.15.3 --set crds.enabled=true
+```
+
+View all resources
+```
+kubectl get Issuers,ClusterIssuers,Certificates,CertificateRequests,Orders,Challenges
+```
+
+Deploy ingress
+```
+kubectl apply -f ingres.yaml --validate=false
+```
+
+Check if I can connect to service
+```
+kubectl port-forward svc/nginx-service 8080:8080
+kubectl port-forward svc/ingress-nginx-controller 8080:80
+```
+
+
+## Autoscale
+```
+kubectl autoscale deployment php-apache --cpu-percent=50 --min=1 --max=10
+```
+
+Debug
+```
+kubectl get --raw "/apis/metrics.k8s.io/v1beta1/nodes" | jq
+kubectl get deployment php-apache -o yaml | grep -A 3 "resources"
+kubectl get apiservices | grep metrics
+kubectl describe hpa php-apache
+```
+
+##
+```
+az cdn profile create --name k-cdn-pictime-playground-eus1 --resource-group MC_kubernetes-eus1-playground --sku Standard_Microsoft
+az cdn endpoint create --name download-eus1-ms --profile-name k-cdn-pictime-playground-eus1 --resource-group MC_kubernetes-eus1-playground \
+  --origin download-eus1.testing.pic-time.com --origin-host-header download-eus1.testing.pic-time.com
+```
+
+## Fix
+```
+kubectl label node akswipool000000 download=true
+kubectl get nodes --show-labels
+```
