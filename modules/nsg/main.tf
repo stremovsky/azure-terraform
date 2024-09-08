@@ -1,4 +1,5 @@
-# Security Group allowing SSH access
+# Network Security Group allowing SSH and ICMP protocols
+
 resource "azurerm_network_security_group" "nsg" {
   name                = var.resourse_name
   location            = var.location
@@ -35,7 +36,7 @@ resource "azurerm_subnet_network_security_group_association" "nsg_association" {
 }
 
 data "azurerm_resources" "aks_nsg" {
-  resource_group_name = var.aks_resource_group_name
+  resource_group_name = var.aks_node_resource_group_name
   type                = "Microsoft.Network/networkSecurityGroups"
 }
 
@@ -49,7 +50,7 @@ resource "azurerm_network_security_rule" "ssh_rule" {
   destination_port_range      = "22"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = var.aks_resource_group_name
+  resource_group_name         = var.aks_node_resource_group_name
   network_security_group_name = data.azurerm_resources.aks_nsg.resources.0.name
 }
 
@@ -63,6 +64,6 @@ resource "azurerm_network_security_rule" "icmp_rule" {
   destination_port_range      = "*"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = var.aks_resource_group_name
+  resource_group_name         = var.aks_node_resource_group_name
   network_security_group_name = data.azurerm_resources.aks_nsg.resources.0.name
 }

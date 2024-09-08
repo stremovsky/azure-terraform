@@ -76,10 +76,20 @@ variable "app_max_count" {
   default = 10
 }
 
-variable "vm_size" {
+variable "default_vm_size" {
   description = "VM size for the nodes in the default node pool"
   type        = string
   default     = "Standard_DS2_v2"
+}
+
+variable "default_disk_size" {
+  type    = number
+  default = 40
+}
+
+variable "windows_vm_size" {
+  type    = string
+  default = "Standard_D4_v5"
 }
 
 variable "vnet_subnet_id" {

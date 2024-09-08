@@ -8,7 +8,7 @@ variable "location" {
   type        = string
 }
 
-variable "enable_bastion" {}
+variable "create_bastion_subnet" {}
 variable "create_subnet" {}
 variable "create_vnet" {}
 variable "subnet_name" {}

@@ -3,5 +3,5 @@ output "aks_subnet_id" {
 }
 
 output "bastion_subnet_id" {
-  value = var.enable_bastion ? azurerm_subnet.bastion_subnet[0].id : ""
+  value = var.create_bastion_subnet ? azurerm_subnet.bastion_subnet[0].id : ""
 }

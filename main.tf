@@ -2,7 +2,7 @@ provider "azurerm" {
   features {
     key_vault {
       purge_soft_delete_on_destroy    = true
-      recover_soft_deleted_key_vaults = true
+      recover_soft_deleted_key_vaults = false
     }
   }
 }
@@ -10,6 +10,7 @@ provider "azurerm" {
 data "azurerm_subscription" "current" {
 }
 
+# Create Azure Resource Group id create_aks_resource_group variable is true
 resource "azurerm_resource_group" "aks_rg" {
   count    = var.create_aks_resource_group ? 1 : 0
   name     = var.resource_group_name
@@ -22,6 +23,7 @@ resource "azurerm_resource_group" "aks_rg" {
 #  location = var.location
 #}
 
+# Load Azure Resource Group
 data "azurerm_resource_group" "aks_rg" {
   name = var.create_aks_resource_group ? azurerm_resource_group.aks_rg[0].name : var.resource_group_name
 }
@@ -32,19 +34,16 @@ data "azurerm_resource_group" "aks_rg" {
 
 module "vnet" {
   source = "./modules/vnet"
-  #resource_group_name = data.azurerm_resource_group.aks_rg.name
-  resource_group_name = length(var.vnet_resource_group_name) > 0 ? var.vnet_resource_group_name : data.azurerm_resource_group.aks_rg.name
-  location            = data.azurerm_resource_group.aks_rg.location
-  enable_bastion      = var.enable_bastion
-  create_subnet       = var.create_subnet
-  create_vnet         = var.create_vnet
+  # check if vnet should be loaded from other resource group
+  resource_group_name   = length(var.vnet_resource_group_name) > 0 ? var.vnet_resource_group_name : data.azurerm_resource_group.aks_rg.name
+  location              = data.azurerm_resource_group.aks_rg.location
+  create_bastion_subnet = var.enable_bastion
+  create_subnet         = var.create_subnet
+  create_vnet           = var.create_vnet
 
-  vnet_name   = var.vnet_name
-  vnet_cidr   = "10.0.0.0/16"
-  subnet_name = "kubernetes-eus1-playground"
-  #vnet_cidr           = "10.224.0.0/12"
-  #vnet_subnet_id
-  #aks_subnet_cidr     = "10.224.0.0/24"
+  subnet_name         = "kubernetes-eus1-playground"
+  vnet_name           = var.vnet_name
+  vnet_cidr           = "10.0.0.0/16"
   aks_subnet_cidr     = "10.0.36.0/22"
   bastion_subnet_cidr = "10.224.1.0/24"
 }
@@ -60,7 +59,7 @@ module "aks_cluster" {
   enable_node_public_ip = var.enable_node_public_ip
   cluster_name          = var.cluster_name
   dns_prefix            = var.dns_prefix
-  vm_size               = var.vm_size
+  default_vm_size       = var.default_vm_size
   vnet_subnet_id        = module.vnet.aks_subnet_id
   tags                  = var.tags
   service_cidr          = "172.16.16.0/24"
@@ -110,7 +109,7 @@ module "nsg" {
   resourse_name       = "nsg-sg"
   resource_group_name = data.azurerm_resource_group.aks_rg.name
   #resource_group_name = module.aks_cluster[0].node_resource_group
-  aks_resource_group_name = module.aks_cluster[0].node_resource_group
+  aks_node_resource_group_name = module.aks_cluster[0].node_resource_group
   #aks_resource_group_name = data.azurerm_resource_group.node_rg.name
   location = data.azurerm_resource_group.aks_rg.location
 
