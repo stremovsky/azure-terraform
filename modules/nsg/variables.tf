@@ -1,4 +1,4 @@
-variable "aks_resource_group_name" {
+variable "aks_node_resource_group_name" {
   type = string
 }
 
