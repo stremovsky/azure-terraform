@@ -35,16 +35,16 @@ resource "time_sleep" "wait_for_rbac" {
   depends_on      = [azurerm_role_assignment.rbac]
 }
 
-resource "azurerm_key_vault_secret" "example-secret" {
-  depends_on   = [time_sleep.wait_for_rbac]
-  name         = "secret3"
-  value        = "mysecretvalue"
-  key_vault_id = azurerm_key_vault.kv.id
-}
+#resource "azurerm_key_vault_secret" "example-secret" {
+#  depends_on   = [time_sleep.wait_for_rbac]
+#  name         = "secret3"
+#  value        = "mysecretvalue"
+#  key_vault_id = azurerm_key_vault.kv.id
+#}
 
-resource "azurerm_key_vault_secret" "secret2" {
-  depends_on   = [time_sleep.wait_for_rbac]
-  name         = "download-secret2"
-  value        = "mysecretvalue42"
-  key_vault_id = azurerm_key_vault.kv.id
-}
+#resource "azurerm_key_vault_secret" "secret2" {
+#  depends_on   = [time_sleep.wait_for_rbac]
+#  name         = "download-secret2"
+#  value        = "mysecretvalue42"
+#  key_vault_id = azurerm_key_vault.kv.id
+#}

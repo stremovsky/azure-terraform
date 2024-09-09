@@ -96,6 +96,8 @@ variable "vnet_subnet_id" {
   type = string
 }
 
+variable "default_node_pool_name" {}
+variable "windows_node_pool_name" {}
 variable "service_cidr" {}
 variable "dns_service_ip" {}
 variable "pod_cidr" {}

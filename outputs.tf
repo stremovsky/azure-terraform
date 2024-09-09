@@ -29,8 +29,8 @@ output "tetant_id" {
 #}
 
 
-output "workload_nginx_identity_client_id" {
-  value = module.identity.workload_nginx_identity_client_id
+output "workload_webapp_identity_client_id" {
+  value = module.identity.workload_webapp_identity_client_id
 }
 
 output "keyvault_url" {

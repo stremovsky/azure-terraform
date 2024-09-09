@@ -9,7 +9,7 @@ variable "aks_enabled" {
 variable "enable_node_public_ip" {
   description = "Flag to enable or disable public IP assigned to kunernetes nodes"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "enable_bastion" {
@@ -103,7 +103,7 @@ variable "max_count" {
   default     = 10
 }
 
-variable "vm_size" {
+variable "default_vm_size" {
   description = "VM size for the nodes in the default node pool"
   type        = string
   default     = "Standard_DS2_v2"
@@ -116,3 +116,7 @@ variable "tags" {
     environment = "Development"
   }
 }
+
+variable "brand" {}
+variable "environment" {}
+variable "region_name" {}

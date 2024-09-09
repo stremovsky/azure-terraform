@@ -11,7 +11,7 @@ data "azurerm_resources" "registry" {
 }
 
 resource "azurerm_role_assignment" "acr_pull" {
-  #principal_id         = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
+  #principal_id         = azurerm_kubernetes_cluster.k.kubelet_identity[0].object_id
   principal_id         = var.aks_kubelet_identity_id
   role_definition_name = "AcrPull"
   scope                = data.azurerm_resources.registry.resources.0.id

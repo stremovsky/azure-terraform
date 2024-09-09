@@ -7,6 +7,14 @@ provider "azurerm" {
   }
 }
 
+locals {
+  keyvault_name          = "k-kv-${var.brand}-${var.environment}-${var.region_name}"
+  workload_identity_name = "k-id-${var.brand}-${var.environment}-${var.region_name}"
+  default_node_pool_name = "default-${var.brand}-${var.environment}-${var.region_name}"
+  windows_node_pool_name = "winpool"
+}
+
+
 data "azurerm_subscription" "current" {
 }
 
@@ -54,18 +62,20 @@ module "aks_cluster" {
   source              = "./modules/aks"
   resource_group_name = data.azurerm_resource_group.aks_rg.name
   #node_resource_group    = data.azurerm_resource_group.node_rg.name
-  node_resource_group   = "MC_${var.resource_group_name}"
-  location              = data.azurerm_resource_group.aks_rg.location
-  enable_node_public_ip = var.enable_node_public_ip
-  cluster_name          = var.cluster_name
-  dns_prefix            = var.dns_prefix
-  default_vm_size       = var.default_vm_size
-  vnet_subnet_id        = module.vnet.aks_subnet_id
-  tags                  = var.tags
-  service_cidr          = "172.16.16.0/24"
-  dns_service_ip        = "172.16.16.10"
-  pod_cidr              = "172.16.0.0/20"
-  ssh_key_file          = ""
+  node_resource_group    = "MC_${var.resource_group_name}"
+  default_node_pool_name = local.default_node_pool_name
+  windows_node_pool_name = local.windows_node_pool_name
+  location               = data.azurerm_resource_group.aks_rg.location
+  enable_node_public_ip  = var.enable_node_public_ip
+  cluster_name           = var.cluster_name
+  dns_prefix             = var.dns_prefix
+  default_vm_size        = var.default_vm_size
+  vnet_subnet_id         = module.vnet.aks_subnet_id
+  tags                   = var.tags
+  service_cidr           = "172.16.16.0/24"
+  dns_service_ip         = "172.16.16.10"
+  pod_cidr               = "172.16.0.0/20"
+  ssh_key_file           = ""
 }
 
 module "registry" {
@@ -77,18 +87,19 @@ module "registry" {
 
 module "keyvault" {
   source                  = "./modules/keyvault"
-  keyvault_name           = "kuber-keyvault-test1"
+  keyvault_name           = local.keyvault_name
   resource_group_name     = data.azurerm_resource_group.aks_rg.name
   location                = data.azurerm_resource_group.aks_rg.location
   aks_kubelet_identity_id = module.aks_cluster[0].aks_kubelet_identity_id
 }
 
 module "identity" {
-  source              = "./modules/identity"
-  location            = data.azurerm_resource_group.aks_rg.location
-  keyvault_id         = module.keyvault.keyvault_id
-  resource_group_name = data.azurerm_resource_group.aks_rg.name
-  oidc_issuer_url     = module.aks_cluster[0].oidc_issuer_url
+  source                 = "./modules/identity"
+  location               = data.azurerm_resource_group.aks_rg.location
+  keyvault_id            = module.keyvault.keyvault_id
+  resource_group_name    = data.azurerm_resource_group.aks_rg.name
+  oidc_issuer_url        = module.aks_cluster[0].oidc_issuer_url
+  workload_identity_name = local.workload_identity_name
 }
 
 # Create Bastion host

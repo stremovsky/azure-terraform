@@ -1,4 +1,4 @@
-resource "azurerm_kubernetes_cluster" "aks" {
+resource "azurerm_kubernetes_cluster" "k" {
   name                    = var.cluster_name
   location                = var.location
   dns_prefix              = var.dns_prefix
@@ -58,8 +58,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
-  name                  = "wipool"
-  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
+  name                  = var.windows_node_pool_name
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.k.id
   enable_auto_scaling   = true
   vm_size               = var.windows_vm_size
   os_disk_size_gb       = 256
@@ -68,6 +68,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
   min_count             = var.app_min_count
   node_count            = var.app_node_count
   vnet_subnet_id        = var.vnet_subnet_id
+  enable_node_public_ip = var.enable_node_public_ip
   node_labels = {
     "download" = "true"
   }
