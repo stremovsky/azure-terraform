@@ -10,7 +10,7 @@ provider "azurerm" {
 locals {
   keyvault_name          = "k-kv-${var.brand}-${var.environment}-${var.region_name}"
   workload_identity_name = "k-id-${var.brand}-${var.environment}-${var.region_name}"
-  default_node_pool_name = "default-${var.brand}-${var.environment}-${var.region_name}"
+  default_node_pool_name = "default"
   windows_node_pool_name = "wpool"
 }
 

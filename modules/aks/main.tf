@@ -7,7 +7,7 @@ resource "azurerm_kubernetes_cluster" "k" {
   private_cluster_enabled = var.aks_private
 
   default_node_pool {
-    name                        = "default"
+    name                        = var.default_node_pool_name
     vm_size                     = var.default_vm_size
     min_count                   = var.system_min_count
     max_count                   = var.system_max_count
