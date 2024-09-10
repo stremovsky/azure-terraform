@@ -118,5 +118,6 @@ variable "tags" {
 }
 
 variable "brand" {}
+variable "acme_email" {}
 variable "environment" {}
 variable "region_name" {}
