@@ -1,4 +1,4 @@
-resource "azurerm_kubernetes_cluster" "k" {
+resource "azurerm_kubernetes_cluster" "aks" {
   name                    = var.cluster_name
   location                = var.location
   dns_prefix              = var.dns_prefix
@@ -59,7 +59,7 @@ resource "azurerm_kubernetes_cluster" "k" {
 
 resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
   name                  = var.windows_node_pool_name
-  kubernetes_cluster_id = azurerm_kubernetes_cluster.k.id
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
   enable_auto_scaling   = true
   vm_size               = var.windows_vm_size
   os_disk_size_gb       = 256
