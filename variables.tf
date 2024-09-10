@@ -1,5 +1,3 @@
-# variables.tf
-
 variable "aks_enabled" {
   description = "Flag to enable or disable the AKS cluster creation"
   type        = bool
@@ -117,7 +115,8 @@ variable "tags" {
   }
 }
 
-variable "brand" {}
+variable "whitelabel" {}
 variable "acme_email" {}
 variable "environment" {}
 variable "region_name" {}
+variable "whitelabel_short" {}

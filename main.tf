@@ -8,9 +8,11 @@ provider "azurerm" {
 }
 
 locals {
-  keyvault_name          = "k-kv-${var.brand}-${var.environment}-${var.region_name}"
-  workload_identity_name = "k-id-${var.brand}-${var.environment}-${var.region_name}"
+  keyvault_name          = "k-kv-${var.whitelabel_short}-${var.environment}-${var.region_name}"
+  workload_identity_name = "k-id-${var.whitelabel_short}-${var.environment}-${var.region_name}"
+  # For Linux node pools, the length must be between 1-12 characters.
   default_node_pool_name = "default"
+  # For Windows node pools, the length must be between 1-6 characters.
   windows_node_pool_name = "wpool"
 }
 
