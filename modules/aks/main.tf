@@ -23,13 +23,13 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   network_profile {
-    network_plugin      = "azure"
-    load_balancer_sku   = "standard"
-    network_policy      = "azure"
-    network_plugin_mode = "overlay"
+    network_plugin      = var.network_plugin
+    network_policy      = var.network_policy
+    network_plugin_mode = var.network_plugin_mode
     pod_cidr            = var.pod_cidr
     service_cidr        = var.service_cidr
     dns_service_ip      = var.dns_service_ip
+    load_balancer_sku   = var.load_balancer_sku
   }
 
   identity {
@@ -43,7 +43,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   dynamic "linux_profile" {
     for_each = length(var.ssh_key_file) > 0 ? [true] : []
     content {
-      admin_username = "aksadmin"
+      admin_username = var.linux_admin_user
       ssh_key {
         key_data = file(var.ssh_key_file)
       }
@@ -62,14 +62,12 @@ resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
   enable_auto_scaling   = true
   vm_size               = var.windows_vm_size
-  os_disk_size_gb       = 256
+  os_disk_size_gb       = var.windows_disk_size
   os_type               = var.app_os_type
   max_count             = var.app_max_count
   min_count             = var.app_min_count
   node_count            = var.app_node_count
   vnet_subnet_id        = var.vnet_subnet_id
   enable_node_public_ip = var.enable_node_public_ip
-  node_labels = {
-    "download" = "true"
-  }
+  node_labels           = var.windows_node_pool_labels
 }

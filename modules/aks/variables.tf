@@ -92,12 +92,45 @@ variable "windows_vm_size" {
   default = "Standard_D4_v5"
 }
 
+variable "windows_disk_size" {
+  type    = number
+  default = 256
+}
+
 variable "vnet_subnet_id" {
   type = string
 }
 
+variable "network_plugin" {
+  type    = string
+  default = "azure"
+}
+
+variable "network_policy" {
+  type    = string
+  default = "azure"
+}
+
+variable "load_balancer_sku" {
+  type    = string
+  default = "standard"
+}
+
+variable "network_plugin_mode" {
+  type    = string
+  default = "overlay"
+}
+
+variable "linux_admin_user" {
+  type    = string
+  default = "aksadmin"
+}
+
 variable "default_node_pool_name" {}
 variable "windows_node_pool_name" {}
+variable "windows_node_pool_labels" {
+  type = map(string)
+}
 variable "service_cidr" {}
 variable "dns_service_ip" {}
 variable "pod_cidr" {}

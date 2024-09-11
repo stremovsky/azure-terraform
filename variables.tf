@@ -29,27 +29,25 @@ variable "enable_nsg" {
 }
 
 variable "create_vnet" {
-  type    = bool
-  default = false
+  description = "Enable/disable vnet creation"
+  type        = bool
+  default     = false
 }
 
 variable "create_subnet" {
-  type    = bool
-  default = false
+  description = "Enable/disable subnet creation"
+  type        = bool
+  default     = false
 }
 
 variable "create_aks_resource_group" {
-  type    = bool
-  default = false
-}
-
-variable "create_node_resource_group" {
-  type    = bool
-  default = false
+  description = "Enable/disable AKS resource group creation"
+  type        = bool
+  default     = false
 }
 
 variable "aks_cluster_resource_group_name" {
-  description = "Name of the resource group"
+  description = "Name of the resource group for AKS cluster"
   type        = string
 }
 
@@ -75,8 +73,9 @@ variable "registry_name" {
 }
 
 variable "registry_resource_group_name" {
-  type    = string
-  default = "global-registry"
+  description = "Name of the resource group for registry"
+  type        = string
+  default     = "global-registry"
 }
 
 variable "location" {
@@ -129,14 +128,16 @@ variable "tags" {
   }
 }
 
+variable "windows_node_pool_labels" {
+  type = map(string)
+}
+
 variable "whitelabel" {}
+variable "whitelabel_short" {}
 variable "acme_email" {}
-variable "environment" {}
+variable "environment_name" {}
 variable "region_name" {}
 variable "aks_nodes_subnet_cidr" {}
 variable "aks_pods_subnet_cidr" {}
 variable "aks_services_subnet_cidr" {}
 variable "aks_dns_server_ip" {}
-
-
-variable "whitelabel_short" {}
