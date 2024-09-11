@@ -8,15 +8,6 @@ locals {
   subnet_name            = "kubernetes-${var.region_name}-${var.environment}"
 }
 
-terraform {
-  backend "azurerm" {
-    resource_group_name  = "pictime-infrastructure"
-    storage_account_name = "pictimeinfrastructure"
-    container_name       = "tfstate"
-    key                  = "aks/terraform.tfstate"
-  }
-}
-
 provider "azurerm" {
   features {
     key_vault {
@@ -32,23 +23,23 @@ data "azurerm_subscription" "current" {
 # Create Azure Resource Group id create_aks_resource_group variable is true
 resource "azurerm_resource_group" "aks_rg" {
   count    = var.create_aks_resource_group ? 1 : 0
-  name     = var.resource_group_name
+  name     = var.aks_cluster_resource_group_name
   location = var.location
 }
 
 #resource "azurerm_resource_group" "node_rg" {
 #  count    = var.create_node_resource_group ? 1 : 0
-#  name     = "MC_${var.resource_group_name}"
+#  name     = "MC_${var.aks_cluster_resource_group_name}"
 #  location = var.location
 #}
 
 # Load Azure Resource Group
 data "azurerm_resource_group" "aks_rg" {
-  name = var.create_aks_resource_group ? azurerm_resource_group.aks_rg[0].name : var.resource_group_name
+  name = var.create_aks_resource_group ? azurerm_resource_group.aks_rg[0].name : var.aks_cluster_resource_group_name
 }
 
 #data "azurerm_resource_group" "node_rg" {
-#  name = var.create_node_resource_group ? azurerm_resource_group.node_rg[0].name : "MC_${var.resource_group_name}"
+#  name = var.create_node_resource_group ? azurerm_resource_group.node_rg[0].name : "MC_${var.aks_cluster_resource_group_name}"
 #}
 
 module "vnet" {
@@ -73,7 +64,7 @@ module "aks_cluster" {
   source              = "./modules/aks"
   resource_group_name = data.azurerm_resource_group.aks_rg.name
   #node_resource_group    = data.azurerm_resource_group.node_rg.name
-  node_resource_group    = "MC_${var.resource_group_name}"
+  node_resource_group    = "MC_${var.aks_cluster_resource_group_name}"
   default_node_pool_name = local.default_node_pool_name
   windows_node_pool_name = local.windows_node_pool_name
   location               = data.azurerm_resource_group.aks_rg.location

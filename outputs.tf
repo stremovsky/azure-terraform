@@ -7,8 +7,8 @@ output "aks_oidc_issuer_url" {
 }
 
 output "resource_group_name" {
-  value       = var.resource_group_name
-  description = "The name of the resource group"
+  value       = var.aks_cluster_resource_group_name
+  description = "The parent cluster resource group name"
 }
 
 output "kube_config" {

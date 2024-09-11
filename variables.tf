@@ -48,16 +48,14 @@ variable "create_node_resource_group" {
   default = false
 }
 
-variable "resource_group_name" {
+variable "aks_cluster_resource_group_name" {
   description = "Name of the resource group"
   type        = string
-  default     = "kubernetes-eus1-playground"
 }
 
 variable "vnet_name" {
   description = "Vnet resource name"
   type        = string
-  #default     = "PictimeNetEUS1"
 }
 
 variable "vnet_cidr" {
@@ -69,7 +67,6 @@ variable "vnet_cidr" {
 variable "vnet_resource_group_name" {
   description = "Name of the resource group if existing vnet is used"
   type        = string
-  #default     = "PictimeEUS1"
 }
 
 variable "registry_name" {
