@@ -2,7 +2,7 @@
 provider "kubernetes" {
   #config_path = "~/.kube/config"
   #config_path = "${path.module}/kubeconfig"
-  host = module.aks_cluster[0].aks_host
+  host                   = module.aks_cluster[0].aks_host
   client_certificate     = base64decode(module.aks_cluster[0].client_certificate)
   client_key             = base64decode(module.aks_cluster[0].client_key)
   cluster_ca_certificate = base64decode(module.aks_cluster[0].cluster_ca_certificate)
@@ -12,7 +12,7 @@ provider "helm" {
   kubernetes {
     #config_path = "~/.kube/config"
     #config_path = "${path.module}/kubeconfig"
-    host = module.aks_cluster[0].aks_host
+    host                   = module.aks_cluster[0].aks_host
     client_certificate     = base64decode(module.aks_cluster[0].client_certificate)
     client_key             = base64decode(module.aks_cluster[0].client_key)
     cluster_ca_certificate = base64decode(module.aks_cluster[0].cluster_ca_certificate)
@@ -37,6 +37,7 @@ resource "helm_release" "cert_manager" {
 }
 
 resource "kubernetes_manifest" "cluster_issuer" {
+  count = 0
   manifest = {
     apiVersion = "cert-manager.io/v1"
     kind       = "ClusterIssuer"

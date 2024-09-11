@@ -1,3 +1,22 @@
+locals {
+  keyvault_name          = "k-kv-${var.whitelabel_short}-${var.environment}-${var.region_name}"
+  workload_identity_name = "k-id-${var.whitelabel_short}-${var.environment}-${var.region_name}"
+  # For Linux node pools, the length must be between 1-12 characters.
+  default_node_pool_name = "default"
+  # For Windows node pools, the length must be between 1-6 characters.
+  windows_node_pool_name = "wpool"
+  subnet_name            = "kubernetes-${var.region_name}-${var.environment}"
+}
+
+terraform {
+  backend "azurerm" {
+    resource_group_name  = "pictime-infrastructure"
+    storage_account_name = "pictimeinfrastructure"
+    container_name       = "tfstate"
+    key                  = "aks/terraform.tfstate"
+  }
+}
+
 provider "azurerm" {
   features {
     key_vault {
@@ -6,16 +25,6 @@ provider "azurerm" {
     }
   }
 }
-
-locals {
-  keyvault_name          = "k-kv-${var.whitelabel_short}-${var.environment}-${var.region_name}"
-  workload_identity_name = "k-id-${var.whitelabel_short}-${var.environment}-${var.region_name}"
-  # For Linux node pools, the length must be between 1-12 characters.
-  default_node_pool_name = "default"
-  # For Windows node pools, the length must be between 1-6 characters.
-  windows_node_pool_name = "wpool"
-}
-
 
 data "azurerm_subscription" "current" {
 }
@@ -51,11 +60,11 @@ module "vnet" {
   create_subnet         = var.create_subnet
   create_vnet           = var.create_vnet
 
-  subnet_name         = "kubernetes-eus1-playground"
+  subnet_name         = local.subnet_name
   vnet_name           = var.vnet_name
-  vnet_cidr           = "10.0.0.0/16"
-  aks_subnet_cidr     = "10.0.36.0/22"
-  bastion_subnet_cidr = "10.224.1.0/24"
+  vnet_cidr           = var.vnet_cidr
+  aks_subnet_cidr     = var.aks_nodes_subnet_cidr
+  bastion_subnet_cidr = var.bastion_subnet_cidr
 }
 
 # Create AKS cluster
@@ -74,15 +83,18 @@ module "aks_cluster" {
   default_vm_size        = var.default_vm_size
   vnet_subnet_id         = module.vnet.aks_subnet_id
   tags                   = var.tags
-  service_cidr           = "172.16.16.0/24"
-  dns_service_ip         = "172.16.16.10"
-  pod_cidr               = "172.16.0.0/20"
-  ssh_key_file           = ""
+  #  "172.16.16.0/24"
+  service_cidr = var.aks_services_subnet_cidr
+  # "172.16.16.10"
+  dns_service_ip = var.aks_dns_server_ip
+  # "172.16.0.0/20"
+  pod_cidr     = var.aks_pods_subnet_cidr
+  ssh_key_file = ""
 }
 
 module "registry" {
   source                  = "./modules/registry"
-  resource_group_name     = "devops-containerregistry"
+  resource_group_name     = var.registry_resource_group_name
   aks_kubelet_identity_id = module.aks_cluster[0].aks_kubelet_identity_id
   registry_name           = var.registry_name
 }
