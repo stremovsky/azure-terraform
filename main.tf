@@ -6,6 +6,7 @@ locals {
   # For Windows node pools, the length must be between 1-6 characters.
   windows_node_pool_name = "wpool"
   subnet_name            = "kubernetes-${var.region_name}-${var.environment_name}"
+  nsg_resourse_name      = "nsg-sg"
 }
 
 provider "azurerm" {
@@ -75,10 +76,10 @@ module "aks_cluster" {
 }
 
 module "registry" {
-  source                  = "./modules/registry"
-  resource_group_name     = var.registry_resource_group_name
-  aks_kubelet_identity_id = module.aks_cluster[0].aks_kubelet_identity_id
-  registry_name           = var.registry_name
+  source                       = "./modules/registry"
+  registry_name                = var.registry_name
+  aks_kubelet_identity_id      = module.aks_cluster[0].aks_kubelet_identity_id
+  registry_resource_group_name = var.registry_resource_group_name
 }
 
 module "keyvault" {
@@ -113,13 +114,12 @@ module "bastion" {
 module "nsg" {
   count               = var.enable_nsg ? 1 : 0
   source              = "./modules/nsg"
-  resourse_name       = "nsg-sg"
+  resourse_name       = local.nsg_resourse_name
   resource_group_name = data.azurerm_resource_group.aks_rg.name
   #resource_group_name = module.aks_cluster[0].node_resource_group
   aks_node_resource_group_name = module.aks_cluster[0].node_resource_group
   #aks_resource_group_name = data.azurerm_resource_group.node_rg.name
   location = data.azurerm_resource_group.aks_rg.location
-
   # Networking
   aks_subnet_id = module.vnet.aks_subnet_id
 }

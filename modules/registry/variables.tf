@@ -1,5 +1,5 @@
+variable "registry_name" {}
+
 variable "aks_kubelet_identity_id" {}
 
-variable "resource_group_name" {}
-
-variable "registry_name" {}
+variable "registry_resource_group_name" {}

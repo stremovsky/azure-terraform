@@ -1,5 +1,6 @@
 # Network Security Group allowing SSH and ICMP protocols
 
+# Create a Network Security Group
 resource "azurerm_network_security_group" "nsg" {
   name                = var.resourse_name
   location            = var.location
@@ -30,16 +31,19 @@ resource "azurerm_network_security_group" "nsg" {
   }
 }
 
+# Associate the Network Security Group with the Subnet
 resource "azurerm_subnet_network_security_group_association" "nsg_association" {
   subnet_id                 = var.aks_subnet_id
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
+# Get the ID of the existing Network Security Group
 data "azurerm_resources" "aks_nsg" {
   resource_group_name = var.aks_node_resource_group_name
   type                = "Microsoft.Network/networkSecurityGroups"
 }
 
+# Create a Network Security Rule to allow SSH access
 resource "azurerm_network_security_rule" "ssh_rule" {
   name                        = "Allow-SSH"
   priority                    = 1001
@@ -54,6 +58,7 @@ resource "azurerm_network_security_rule" "ssh_rule" {
   network_security_group_name = data.azurerm_resources.aks_nsg.resources.0.name
 }
 
+# Create a Network Security Rule allow ICMP protocol
 resource "azurerm_network_security_rule" "icmp_rule" {
   name                        = "Allow-ICMP"
   priority                    = 1002

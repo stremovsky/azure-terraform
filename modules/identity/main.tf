@@ -11,6 +11,7 @@
 #  #owners                       = [data.azuread_client_config.current.object_id]
 #}
 
+#  Create a User Assignes Identity
 resource "azurerm_user_assigned_identity" "workload_webapp_identity" {
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -26,6 +27,7 @@ resource "azurerm_role_assignment" "kv_access" {
   principal_type       = "ServicePrincipal"
 }
 
+# Assign Key Vault Secrets User role to the Workload Identity
 resource "azurerm_federated_identity_credential" "workload_federated_identity" {
   name                = "workload-federated-identity"
   resource_group_name = var.resource_group_name

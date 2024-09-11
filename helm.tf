@@ -37,7 +37,7 @@ resource "helm_release" "cert_manager" {
 }
 
 resource "kubernetes_manifest" "cluster_issuer" {
-  count = 0
+  count = 1
   manifest = {
     apiVersion = "cert-manager.io/v1"
     kind       = "ClusterIssuer"
