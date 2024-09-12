@@ -17,7 +17,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     enable_auto_scaling         = true
     vnet_subnet_id              = var.vnet_subnet_id
     os_sku                      = var.system_os_sku
-    os_disk_type                = var.syste_disk_type
+    os_disk_type                = var.system_disk_type
     os_disk_size_gb             = var.system_disk_size
   }
 
@@ -67,6 +67,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
   node_count            = var.app_node_count
   vnet_subnet_id        = var.vnet_subnet_id
   enable_node_public_ip = var.enable_node_public_ip
-  node_labels           = var.windows_node_pool_labels
+  node_labels           = var.app_node_pool_labels
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
 }
