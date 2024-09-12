@@ -78,7 +78,9 @@ module "aks_cluster" {
 module "registry" {
   source                  = "./modules/registry"
   registry_name           = var.registry_name
+  create_registry         = var.create_registry
   aks_kubelet_identity_id = module.aks_cluster[0].aks_kubelet_identity_id
+  location                = data.azurerm_resource_group.aks_rg.location
   resource_group_name     = var.registry_resource_group_name
 }
 

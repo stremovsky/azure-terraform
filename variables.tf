@@ -141,3 +141,7 @@ variable "aks_nodes_subnet_cidr" {}
 variable "aks_pods_subnet_cidr" {}
 variable "aks_services_subnet_cidr" {}
 variable "aks_dns_server_ip" {}
+variable "create_registry" {
+  type    = bool
+  default = false
+}

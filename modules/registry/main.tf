@@ -1,5 +1,17 @@
+# Create Azure Container Registry
+resource "azurerm_container_registry" "acr" {
+  count               = var.create_registry ? 1 : 0
+  name                = var.registry_name
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  sku                 = var.acr_sku
+  admin_enabled       = var.admin_enabled
+
+  tags = var.tags
+}
+
 #data "azurerm_container_registry" "registry" {
-#  name = var.registry_name
+#  name                = var.registry_name
 #  resource_group_name = var.resource_group_name
 #}
 
