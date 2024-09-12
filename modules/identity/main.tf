@@ -29,7 +29,7 @@ resource "azurerm_role_assignment" "kv_access" {
 
 # Assign Key Vault Secrets User role to the Workload Identity
 resource "azurerm_federated_identity_credential" "workload_federated_identity" {
-  name                = "workload-federated-identity"
+  name                = "${var.workload_identity_name}-federated"
   resource_group_name = var.resource_group_name
   audience            = ["api://AzureADTokenExchange"]
   parent_id           = azurerm_user_assigned_identity.workload_webapp_identity.id

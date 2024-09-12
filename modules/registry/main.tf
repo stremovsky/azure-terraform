@@ -5,7 +5,7 @@
 
 # Load existing container registry
 data "azurerm_resources" "registry" {
-  resource_group_name = var.registry_resource_group_name
+  resource_group_name = var.resource_group_name
   name                = var.registry_name
   type                = "Microsoft.ContainerRegistry/registries"
 }

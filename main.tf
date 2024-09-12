@@ -76,10 +76,10 @@ module "aks_cluster" {
 }
 
 module "registry" {
-  source                       = "./modules/registry"
-  registry_name                = var.registry_name
-  aks_kubelet_identity_id      = module.aks_cluster[0].aks_kubelet_identity_id
-  registry_resource_group_name = var.registry_resource_group_name
+  source                  = "./modules/registry"
+  registry_name           = var.registry_name
+  aks_kubelet_identity_id = module.aks_cluster[0].aks_kubelet_identity_id
+  resource_group_name     = var.registry_resource_group_name
 }
 
 module "keyvault" {

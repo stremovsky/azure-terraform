@@ -1,19 +1,31 @@
-variable "workload_identity_name" {
-  type = string
-}
-
+# Resource Group Configuration
 variable "resource_group_name" {
-  type = string
+  description = "Name of the resource group where the resources will be deployed."
+  type        = string
 }
 
-variable "oidc_issuer_url" {
-  type = string
-}
-
-variable "keyvault_id" {
-  type = string
-}
-
+# Location Configuration
 variable "location" {
-  type = string
+  description = "Azure region to deploy the resources."
+  type        = string
+  default     = "East US 1"
+}
+
+# Workload Identity Configuration
+variable "workload_identity_name" {
+  description = "Name of the user-assigned managed identity used by the workload."
+  type        = string
+  default     = "workload-identity"
+}
+
+# OIDC Configuration
+variable "oidc_issuer_url" {
+  description = "OIDC issuer URL used for the federated identity."
+  type        = string
+}
+
+# Key Vault Configuration
+variable "keyvault_id" {
+  description = "ID of the Azure Key Vault to which access will be granted."
+  type        = string
 }
