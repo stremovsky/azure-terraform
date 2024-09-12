@@ -114,7 +114,7 @@ variable "max_count" {
   default     = 10
 }
 
-variable "default_vm_size" {
+variable "system_vm_size" {
   description = "VM size for the nodes in the default node pool"
   type        = string
   default     = "Standard_DS2_v2"

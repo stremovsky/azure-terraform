@@ -1,4 +1,4 @@
-
+// Create Bastion Public IP resource
 resource "azurerm_public_ip" "bastion_ip" {
   name                = "bastion-public-ip"
   location            = var.location
@@ -7,6 +7,7 @@ resource "azurerm_public_ip" "bastion_ip" {
   sku                 = "Standard"
 }
 
+// Create Bastiopn Host resource
 resource "azurerm_bastion_host" "bastion" {
   name                = "my-bastion"
   location            = var.location

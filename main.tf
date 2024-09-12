@@ -2,11 +2,11 @@ locals {
   keyvault_name          = "k-kv-${var.whitelabel_short}-${var.environment_name}-${var.region_name}"
   workload_identity_name = "k-id-${var.whitelabel_short}-${var.environment_name}-${var.region_name}"
   # For Linux node pools, the length must be between 1-12 characters.
-  default_node_pool_name = "default"
+  system_node_pool_name = "default"
   # For Windows node pools, the length must be between 1-6 characters.
-  windows_node_pool_name = "wpool"
-  subnet_name            = "kubernetes-${var.region_name}-${var.environment_name}"
-  nsg_resourse_name      = "nsg-sg"
+  app_node_pool_name = "wpool"
+  subnet_name        = "kubernetes-${var.region_name}-${var.environment_name}"
+  nsg_resourse_name  = "nsg-sg"
 }
 
 provider "azurerm" {
@@ -56,14 +56,14 @@ module "aks_cluster" {
   resource_group_name = data.azurerm_resource_group.aks_rg.name
   #node_resource_group    = data.azurerm_resource_group.node_rg.name
   node_resource_group      = "MC_${var.aks_cluster_resource_group_name}"
-  default_node_pool_name   = local.default_node_pool_name
-  windows_node_pool_name   = local.windows_node_pool_name
+  system_node_pool_name    = local.system_node_pool_name
+  app_node_pool_name       = local.app_node_pool_name
   windows_node_pool_labels = var.windows_node_pool_labels
   location                 = data.azurerm_resource_group.aks_rg.location
   enable_node_public_ip    = var.enable_node_public_ip
   cluster_name             = var.cluster_name
   dns_prefix               = var.dns_prefix
-  default_vm_size          = var.default_vm_size
+  system_vm_size           = var.system_vm_size
   vnet_subnet_id           = module.vnet.aks_subnet_id
   tags                     = var.tags
   #  "172.16.16.0/24"

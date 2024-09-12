@@ -1,31 +1,29 @@
+# Resource Group Configuration
 variable "resource_group_name" {
   description = "Name of the resource group"
   type        = string
 }
 
 variable "node_resource_group" {
-  description = "Name of the resource group fopr kubernetes resources"
+  description = "Name of the resource group for Kubernetes resources"
   type        = string
 }
 
+# Location Configuration
 variable "location" {
   description = "Azure region to deploy resources"
   type        = string
   default     = "East US 2"
 }
 
-variable "enable_node_public_ip" {
-  type    = bool
-  default = false
-}
-
+# Cluster Configuration
 variable "cluster_name" {
   description = "Name of the AKS cluster"
   type        = string
 }
 
 variable "aks_private" {
-  description = "Make private or public cluster"
+  description = "Indicates if the cluster should be private or public"
   type        = bool
   default     = false
 }
@@ -41,58 +39,83 @@ variable "ssh_key_file" {
   default     = ""
 }
 
+# Node Pools Configuration
+variable "enable_node_public_ip" {
+  description = "Enable public IPs for nodes"
+  type        = bool
+  default     = false
+}
+
 variable "system_node_count" {
-  type    = number
-  default = 1
+  description = "Number of nodes in the system node pool"
+  type        = number
+  default     = 1
 }
 
 variable "system_min_count" {
-  type    = number
-  default = 1
+  description = "Minimum number of nodes in the system node pool for autoscaling"
+  type        = number
+  default     = 1
 }
 
 variable "system_max_count" {
-  type    = number
-  default = 3
-}
-
-variable "app_os_type" {
-  type    = string
-  default = "Windows"
+  description = "Maximum number of nodes in the system node pool for autoscaling"
+  type        = number
+  default     = 3
 }
 
 variable "app_node_count" {
-  type    = number
-  default = 1
+  description = "Number of nodes in the application node pool"
+  type        = number
+  default     = 1
 }
 
 variable "app_min_count" {
-  type    = number
-  default = 1
+  description = "Minimum number of nodes in the application node pool for autoscaling"
+  type        = number
+  default     = 1
 }
 
 variable "app_max_count" {
-  type    = number
-  default = 10
+  description = "Maximum number of nodes in the application node pool for autoscaling"
+  type        = number
+  default     = 10
 }
 
-variable "default_vm_size" {
-  description = "VM size for the nodes in the default node pool"
+variable "app_os_type" {
+  description = "Operating system type for the application node pool (e.g., Linux, Windows)"
+  type        = string
+  default     = "Windows"
+}
+
+# VM and Disk Configuration
+variable "system_vm_size" {
+  description = "VM size for the nodes in the system node pool"
   type        = string
   default     = "Standard_DS2_v2"
 }
 
-variable "default_disk_size" {
+variable "system_disk_size" {
   type    = number
   default = 40
 }
 
-variable "windows_vm_size" {
+variable "syste_disk_type" {
+  type    = string
+  default = "Managed"
+}
+
+variable "system_os_sku" {
+  type    = string
+  default = "Ubuntu"
+}
+
+variable "app_vm_size" {
   type    = string
   default = "Standard_D4_v5"
 }
 
-variable "windows_disk_size" {
+variable "app_disk_size" {
   type    = number
   default = 256
 }
@@ -126,8 +149,8 @@ variable "linux_admin_user" {
   default = "aksadmin"
 }
 
-variable "default_node_pool_name" {}
-variable "windows_node_pool_name" {}
+variable "system_node_pool_name" {}
+variable "app_node_pool_name" {}
 variable "windows_node_pool_labels" {
   type = map(string)
 }

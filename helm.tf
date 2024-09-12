@@ -64,3 +64,42 @@ resource "kubernetes_manifest" "cluster_issuer" {
   depends_on = [helm_release.cert_manager]
   //depends_on = [module.aks_cluster[0].kube_config, local_file.kubeconfig, helm_release.cert_manager]
 }
+
+resource "kubernetes_manifest" "app_service_account" {
+  count = 1
+  manifest = {
+    apiVersion = "v1"
+    kind       = "ServiceAccount"
+    metadata = {
+      name      = local.workload_identity_name
+      namespace = "default"
+      annotations = {
+        "azure.workload.identity/client-id" = module.identity.workload_webapp_identity_client_id
+      }
+    }
+  }
+}
+
+#helm install ingress-nginx ingress-nginx/ingress-nginx --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"="/healthz" --set controller.service.externalTrafficPolicy=Local
+
+resource "helm_release" "ingress_nginx" {
+  count      = 1
+  name       = "ingress-nginx"
+  namespace  = "ingress-nginx"
+  chart      = "ingress-nginx"
+  repository = "https://kubernetes.github.io/ingress-nginx"
+  #version    = "4.11.2"
+
+  values = [
+    <<-EOF
+    controller:
+      service:
+        annotations:
+          service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
+        externalTrafficPolicy: Local
+    EOF
+  ]
+
+  # Optionally, create the namespace if it doesn't exist
+  create_namespace = true
+}

@@ -8,4 +8,7 @@ variable "location" {
   type        = string
 }
 
-variable "vnet_subnet_id" {}
+variable "vnet_subnet_id" {
+  description = "The ID of the subnet to which the network security group belongs"
+  type        = string
+}

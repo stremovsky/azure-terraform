@@ -11,7 +11,7 @@
 #  #owners                       = [data.azuread_client_config.current.object_id]
 #}
 
-#  Create a User Assignes Identity
+# Create a User Assignes Identity
 resource "azurerm_user_assigned_identity" "workload_webapp_identity" {
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -33,6 +33,6 @@ resource "azurerm_federated_identity_credential" "workload_federated_identity" {
   resource_group_name = var.resource_group_name
   audience            = ["api://AzureADTokenExchange"]
   parent_id           = azurerm_user_assigned_identity.workload_webapp_identity.id
-  subject             = "system:serviceaccount:default:nginx-service-account"
+  subject             = "system:serviceaccount:default:${var.workload_identity_name}"
   issuer              = var.oidc_issuer_url
 }

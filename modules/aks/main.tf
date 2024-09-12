@@ -7,8 +7,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
   private_cluster_enabled = var.aks_private
 
   default_node_pool {
-    name                        = var.default_node_pool_name
-    vm_size                     = var.default_vm_size
+    name                        = var.system_node_pool_name
+    vm_size                     = var.system_vm_size
     min_count                   = var.system_min_count
     max_count                   = var.system_max_count
     node_count                  = var.system_node_count
@@ -16,10 +16,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
     temporary_name_for_rotation = "akstemppool"
     enable_auto_scaling         = true
     vnet_subnet_id              = var.vnet_subnet_id
-
-    os_sku          = "Ubuntu"
-    os_disk_type    = "Managed"
-    os_disk_size_gb = var.default_disk_size
+    os_sku                      = var.system_os_sku
+    os_disk_type                = var.syste_disk_type
+    os_disk_size_gb             = var.system_disk_size
   }
 
   network_profile {
@@ -58,11 +57,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
-  name                  = var.windows_node_pool_name
-  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
+  name                  = var.app_node_pool_name
   enable_auto_scaling   = true
-  vm_size               = var.windows_vm_size
-  os_disk_size_gb       = var.windows_disk_size
+  vm_size               = var.app_vm_size
+  os_disk_size_gb       = var.app_disk_size
   os_type               = var.app_os_type
   max_count             = var.app_max_count
   min_count             = var.app_min_count
@@ -70,4 +68,5 @@ resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
   vnet_subnet_id        = var.vnet_subnet_id
   enable_node_public_ip = var.enable_node_public_ip
   node_labels           = var.windows_node_pool_labels
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
 }
