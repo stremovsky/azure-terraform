@@ -128,7 +128,7 @@ variable "tags" {
   }
 }
 
-variable "windows_node_pool_labels" {
+variable "app_node_pool_labels" {
   type = map(string)
 }
 

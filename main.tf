@@ -55,17 +55,17 @@ module "aks_cluster" {
   source              = "./modules/aks"
   resource_group_name = data.azurerm_resource_group.aks_rg.name
   #node_resource_group    = data.azurerm_resource_group.node_rg.name
-  node_resource_group      = "MC_${var.aks_cluster_resource_group_name}"
-  system_node_pool_name    = local.system_node_pool_name
-  app_node_pool_name       = local.app_node_pool_name
-  windows_node_pool_labels = var.windows_node_pool_labels
-  location                 = data.azurerm_resource_group.aks_rg.location
-  enable_node_public_ip    = var.enable_node_public_ip
-  cluster_name             = var.cluster_name
-  dns_prefix               = var.dns_prefix
-  system_vm_size           = var.system_vm_size
-  vnet_subnet_id           = module.vnet.aks_subnet_id
-  tags                     = var.tags
+  node_resource_group   = "MC_${var.aks_cluster_resource_group_name}"
+  system_node_pool_name = local.system_node_pool_name
+  app_node_pool_name    = local.app_node_pool_name
+  app_node_pool_labels  = var.app_node_pool_labels
+  location              = data.azurerm_resource_group.aks_rg.location
+  enable_node_public_ip = var.enable_node_public_ip
+  cluster_name          = var.cluster_name
+  dns_prefix            = var.dns_prefix
+  system_vm_size        = var.system_vm_size
+  vnet_subnet_id        = module.vnet.aks_subnet_id
+  tags                  = var.tags
   #  "172.16.16.0/24"
   service_cidr = var.aks_services_subnet_cidr
   # "172.16.16.10"
