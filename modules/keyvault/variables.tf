@@ -10,10 +10,21 @@ variable "location" {
   type        = string
 }
 
+variable "keyvault_name" {
+  description = "The name of the Azure Key Vault."
+  type        = string
+}
+
+variable "tenant_id" {
+  description = "The tenant ID for the Azure account."
+  type        = string
+}
+
 variable "aks_kubelet_identity_id" {
   type = string
 }
 
-variable "keyvault_name" {
-  type = string
+variable "user_principle_id" {
+  description = "The principal ID of the user to assign RBAC roles."
+  type        = string
 }

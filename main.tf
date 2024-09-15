@@ -21,6 +21,8 @@ provider "azurerm" {
 data "azurerm_subscription" "current" {
 }
 
+data "azurerm_client_config" "current" {}
+
 # Create Azure Resource Group id create_aks_resource_group variable is true
 resource "azurerm_resource_group" "aks_rg" {
   count    = var.create_aks_resource_group ? 1 : 0
@@ -87,6 +89,8 @@ module "registry" {
 module "keyvault" {
   source                  = "./modules/keyvault"
   keyvault_name           = local.keyvault_name
+  tenant_id               = data.azurerm_client_config.current.tenant_id
+  user_principle_id       = data.azurerm_client_config.current.object_id
   resource_group_name     = data.azurerm_resource_group.aks_rg.name
   location                = data.azurerm_resource_group.aks_rg.location
   aks_kubelet_identity_id = module.aks_cluster[0].aks_kubelet_identity_id
