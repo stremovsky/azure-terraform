@@ -132,11 +132,19 @@ variable "app_node_pool_labels" {
   type = map(string)
 }
 
+variable "environment_name" {
+  description = "The environment name, such as dev, staging, or prod."
+  type        = string
+}
+
+variable "region_name" {
+  description = "The Azure region where the resources will be deployed."
+  type        = string
+}
+
 variable "whitelabel" {}
 variable "whitelabel_short" {}
 variable "acme_email" {}
-variable "environment_name" {}
-variable "region_name" {}
 variable "aks_nodes_subnet_cidr" {}
 variable "aks_pods_subnet_cidr" {}
 variable "aks_services_subnet_cidr" {}
