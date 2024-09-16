@@ -42,7 +42,7 @@ resource "kubernetes_manifest" "cluster_issuer" {
     apiVersion = "cert-manager.io/v1"
     kind       = "ClusterIssuer"
     metadata = {
-      name = "letsencrypt-prod"
+      name = "cert-issuer"
     }
     spec = {
       acme = {
