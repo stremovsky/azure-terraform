@@ -17,22 +17,17 @@ output "kube_config" {
 }
 
 output "tetant_id" {
-  value = module.keyvault.tenant_id
+  value = data.azurerm_client_config.current.tenant_id
 }
-
-#output "workload_identity_sp_client_id" {
-#  value = module.identity.workload_identity_sp_client_id
-#}
-
-#output "workload_identity_sp_resource_id" {
-#  value = module.identity.workload_identity_resource_id
-#}
-
 
 output "workload_webapp_identity_client_id" {
   value = module.identity.workload_webapp_identity_client_id
 }
 
 output "keyvault_url" {
-  value = module.keyvault.keyvault_url
+  value = module.keyvault.key_vault_uri
+}
+
+output current_user_principle_id {
+  value = data.azurerm_client_config.current.object_id
 }

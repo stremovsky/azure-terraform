@@ -8,7 +8,6 @@ variable "resource_group_name" {
 variable "location" {
   description = "Azure region to deploy the resources."
   type        = string
-  default     = "East US 1"
 }
 
 # Workload Identity Configuration

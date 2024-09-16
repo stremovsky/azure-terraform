@@ -81,6 +81,10 @@ resource "kubernetes_manifest" "app_service_account" {
 }
 
 #helm install ingress-nginx ingress-nginx/ingress-nginx --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"="/healthz" --set controller.service.externalTrafficPolicy=Local
+#kubectl patch configmap ingress-nginx-controller -n default --type merge -p '{"data":{"allow-snippet-annotations":"true"}}'
+#{{- if .Values.controller.allowSnippetAnnotations }}
+#  allow-snippet-annotations: "true"
+#{{- end }}
 
 resource "helm_release" "ingress_nginx" {
   count      = 1
@@ -93,6 +97,7 @@ resource "helm_release" "ingress_nginx" {
   values = [
     <<-EOF
     controller:
+      allowSnippetAnnotations: true
       service:
         annotations:
           service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz

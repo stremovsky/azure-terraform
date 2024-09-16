@@ -96,10 +96,42 @@ module "keyvault" {
   aks_kubelet_identity_id = module.aks_cluster[0].aks_kubelet_identity_id
 }
 
+#module "keyvault" {
+#  source  = "claranet/keyvault/azurerm"
+#  version = "7.5.0"
+
+#  custom_name         = local.keyvault_name
+#  client_name         = var.whitelabel
+#  environment         = var.environment_name
+#  location            = data.azurerm_resource_group.aks_rg.location
+#  location_short      = data.azurerm_resource_group.aks_rg.location
+#  resource_group_name = data.azurerm_resource_group.aks_rg.name
+#  stack               = "stack1"
+
+#  rbac_authorization_enabled = true
+#  logs_destinations_ids = []
+
+  # WebApp or other applications Object IDs
+#  reader_objects_ids = [
+#    #var.webapp_service_principal_id
+#  ]
+
+  # Current user should be here to be able to create keys and secrets
+#  admin_objects_ids = [
+#    data.azurerm_client_config.current.object_id
+#  ]
+
+  # Specify Network ACLs
+#  network_acls = {
+#    bypass         = "AzureServices"
+#    default_action = "Deny" # was Allow
+#  }
+#}
+
 module "identity" {
   source                 = "./modules/identity"
   location               = data.azurerm_resource_group.aks_rg.location
-  keyvault_id            = module.keyvault.keyvault_id
+  keyvault_id            = module.keyvault.key_vault_id
   resource_group_name    = data.azurerm_resource_group.aks_rg.name
   oidc_issuer_url        = module.aks_cluster[0].oidc_issuer_url
   workload_identity_name = local.workload_identity_name
