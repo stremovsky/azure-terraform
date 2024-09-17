@@ -1,6 +1,7 @@
 locals {
   keyvault_name          = "k-kv-${var.whitelabel_short}-${var.environment_name}-${var.region_name}"
   workload_identity_name = "k-id-${var.whitelabel_short}-${var.environment_name}-${var.region_name}"
+  bastion_name           = "k-bastion-${var.whitelabel_short}-${var.environment_name}-${var.region_name}"
   # For Linux node pools, the length must be between 1-12 characters.
   system_node_pool_name = "default"
   # For Windows node pools, the length must be between 1-6 characters.
@@ -43,12 +44,12 @@ module "vnet" {
   create_bastion_subnet = var.enable_bastion
   create_subnet         = var.create_subnet
   create_vnet           = var.create_vnet
-
-  subnet_name         = local.subnet_name
-  vnet_name           = var.vnet_name
-  vnet_cidr           = var.vnet_cidr
-  aks_subnet_cidr     = var.aks_nodes_subnet_cidr
-  bastion_subnet_cidr = var.bastion_subnet_cidr
+  tags                  = var.default_tags
+  subnet_name           = local.subnet_name
+  vnet_name             = var.vnet_name
+  vnet_cidr             = var.vnet_cidr
+  aks_subnet_cidr       = var.aks_nodes_subnet_cidr
+  bastion_subnet_cidr   = var.bastion_subnet_cidr
 }
 
 # Create AKS cluster
@@ -67,7 +68,7 @@ module "aks_cluster" {
   dns_prefix            = var.dns_prefix
   system_vm_size        = var.system_vm_size
   vnet_subnet_id        = module.vnet.aks_subnet_id
-  tags                  = var.tags
+  tags                  = var.default_tags
   #  "172.16.16.0/24"
   service_cidr = var.aks_services_subnet_cidr
   # "172.16.16.10"
@@ -80,6 +81,7 @@ module "aks_cluster" {
 module "registry" {
   source                  = "./modules/registry"
   registry_name           = var.registry_name
+  tags                    = var.default_tags
   create_registry         = var.create_registry
   aks_kubelet_identity_id = module.aks_cluster[0].aks_kubelet_identity_id
   location                = data.azurerm_resource_group.aks_rg.location
@@ -89,6 +91,7 @@ module "registry" {
 module "keyvault" {
   source                  = "./modules/keyvault"
   keyvault_name           = local.keyvault_name
+  tags                    = var.default_tags
   tenant_id               = data.azurerm_client_config.current.tenant_id
   user_principle_id       = data.azurerm_client_config.current.object_id
   resource_group_name     = data.azurerm_resource_group.aks_rg.name
@@ -111,17 +114,17 @@ module "keyvault" {
 #  rbac_authorization_enabled = true
 #  logs_destinations_ids = []
 
-  # WebApp or other applications Object IDs
+# WebApp or other applications Object IDs
 #  reader_objects_ids = [
 #    #var.webapp_service_principal_id
 #  ]
 
-  # Current user should be here to be able to create keys and secrets
+# Current user should be here to be able to create keys and secrets
 #  admin_objects_ids = [
 #    data.azurerm_client_config.current.object_id
 #  ]
 
-  # Specify Network ACLs
+# Specify Network ACLs
 #  network_acls = {
 #    bypass         = "AzureServices"
 #    default_action = "Deny" # was Allow
@@ -130,6 +133,7 @@ module "keyvault" {
 
 module "identity" {
   source                 = "./modules/identity"
+  tags                   = var.default_tags
   location               = data.azurerm_resource_group.aks_rg.location
   keyvault_id            = module.keyvault.key_vault_id
   resource_group_name    = data.azurerm_resource_group.aks_rg.name
@@ -141,6 +145,8 @@ module "identity" {
 module "bastion" {
   count               = var.enable_bastion ? 1 : 0
   source              = "./modules/bastion"
+  bastion_name        = local.bastion_name
+  tags                = var.default_tags
   resource_group_name = data.azurerm_resource_group.aks_rg.name
   location            = data.azurerm_resource_group.aks_rg.location
 
@@ -153,6 +159,7 @@ module "nsg" {
   count               = var.enable_nsg ? 1 : 0
   source              = "./modules/nsg"
   resourse_name       = local.nsg_resourse_name
+  tags                = var.default_tags
   resource_group_name = data.azurerm_resource_group.aks_rg.name
   #resource_group_name = module.aks_cluster[0].node_resource_group
   aks_node_resource_group_name = module.aks_cluster[0].node_resource_group

@@ -21,3 +21,10 @@ variable "aks_subnet_id" {
 variable "resourse_name" {
   type = string
 }
+
+# Tags
+variable "tags" {
+  description = "Tags to apply to the resources"
+  type        = map(string)
+  default     = {}
+}

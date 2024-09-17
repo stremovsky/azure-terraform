@@ -55,3 +55,10 @@ variable "bastion_subnet_cidr" {
   description = "CIDR block for the Azure Bastion subnet"
   type        = string
 }
+
+# Tags
+variable "tags" {
+  description = "Tags to apply to the resources"
+  type        = map(string)
+  default     = {}
+}

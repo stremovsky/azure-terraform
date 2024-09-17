@@ -16,6 +16,7 @@ resource "azurerm_user_assigned_identity" "workload_webapp_identity" {
   location            = var.location
   resource_group_name = var.resource_group_name
   name                = var.workload_identity_name
+  tags = var.tags
 }
 
 # Assign Key Vault Secrets User role to the Service Principal

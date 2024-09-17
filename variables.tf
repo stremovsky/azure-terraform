@@ -120,8 +120,8 @@ variable "system_vm_size" {
   default     = "Standard_DS2_v2"
 }
 
-variable "tags" {
-  description = "Tags for the resources"
+variable "default_tags" {
+  description = "Default tags to use for new resources"
   type        = map(string)
   default = {
     environment = "Development"

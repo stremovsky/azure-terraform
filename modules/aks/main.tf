@@ -1,5 +1,6 @@
 resource "azurerm_kubernetes_cluster" "aks" {
   name                    = var.cluster_name
+  tags                    = var.tags
   location                = var.location
   dns_prefix              = var.dns_prefix
   resource_group_name     = var.resource_group_name
@@ -52,12 +53,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
   key_vault_secrets_provider {
     secret_rotation_enabled = true
   }
-
-  tags = var.tags
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
   name                  = var.app_node_pool_name
+  tags                  = var.tags
   enable_auto_scaling   = true
   vm_size               = var.app_vm_size
   os_disk_size_gb       = var.app_disk_size

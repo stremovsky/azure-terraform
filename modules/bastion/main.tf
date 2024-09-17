@@ -1,6 +1,7 @@
 // Create Bastion Public IP resource
 resource "azurerm_public_ip" "bastion_ip" {
-  name                = "bastion-public-ip"
+  name                = "${var.bastion_name}-ip"
+  tags                = var.tags
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
@@ -9,7 +10,8 @@ resource "azurerm_public_ip" "bastion_ip" {
 
 // Create Bastiopn Host resource
 resource "azurerm_bastion_host" "bastion" {
-  name                = "my-bastion"
+  name                = var.bastion_name
+  tags                = var.tags
   location            = var.location
   resource_group_name = var.resource_group_name
 

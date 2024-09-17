@@ -28,3 +28,10 @@ variable "keyvault_id" {
   description = "ID of the Azure Key Vault to which access will be granted."
   type        = string
 }
+
+# Tags
+variable "tags" {
+  description = "Tags to apply to the resources"
+  type        = map(string)
+  default     = {}
+}

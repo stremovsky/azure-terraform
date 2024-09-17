@@ -28,6 +28,6 @@ output "keyvault_url" {
   value = module.keyvault.key_vault_uri
 }
 
-output current_user_principle_id {
+output "current_user_principle_id" {
   value = data.azurerm_client_config.current.object_id
 }

@@ -28,3 +28,10 @@ variable "user_principle_id" {
   description = "The principal ID of the user to assign RBAC roles."
   type        = string
 }
+
+# Tags
+variable "tags" {
+  description = "Tags to apply to the resources"
+  type        = map(string)
+  default     = {}
+}
