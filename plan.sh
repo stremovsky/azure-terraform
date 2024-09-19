@@ -6,6 +6,6 @@ if [ "$WORKSPACE" == "default" ]; then
   WORKSPACE="dev-eus1"
 fi
 
-echo $WORKSPACE
+echo "workspace: $WORKSPACE"
 
 terraform plan -var-file=environments/$WORKSPACE/terraform.tfvars
