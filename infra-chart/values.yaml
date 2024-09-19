@@ -1,0 +1,30 @@
+# Default values for infra.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+clusterIssuer:
+  email: "yuli@2bcloud.io"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  #annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  # name: ""
+  # workloadClientId: ""
+
+cert-manager:
+  crds:
+    enabled: true
+
+ingress-nginx:
+  controller:
+    service:
+      annotations:
+        service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/healthz"
+      externalTrafficPolicy: Local
+    allowSnippetAnnotations: true

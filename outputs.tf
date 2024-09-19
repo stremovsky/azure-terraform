@@ -24,6 +24,10 @@ output "workload_webapp_identity_client_id" {
   value = module.identity.workload_webapp_identity_client_id
 }
 
+output "workload_identity_name" {
+  value = module.identity.workload_identity_name
+}
+
 output "keyvault_url" {
   value = module.keyvault.key_vault_uri
 }
