@@ -10,7 +10,7 @@ variable "location" {
   type        = string
 }
 
-variable "keyvault_name" {
+variable "key_vault_name" {
   description = "The name of the Azure Key Vault."
   type        = string
 }

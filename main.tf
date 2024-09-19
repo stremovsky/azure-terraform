@@ -1,7 +1,7 @@
 locals {
   cluster_name           = "k-${var.environment_name}-${var.region_name}"
   subnet_name            = "k-${var.environment_name}-${var.region_name}"
-  keyvault_name          = "k-kv-${var.whitelabel_short}-${var.environment_name}-${var.region_name}"
+  key_vault_name         = "k-kv-${var.whitelabel_short}-${var.environment_name}-${var.region_name}"
   workload_identity_name = "k-id-${var.whitelabel_short}-${var.environment_name}-${var.region_name}"
   nsg_resourse_name      = "k-nsg-${var.whitelabel_short}-${var.environment_name}-${var.region_name}"
   bastion_name           = "k-bastion-${var.whitelabel_short}-${var.environment_name}-${var.region_name}"
@@ -91,7 +91,7 @@ module "registry" {
 
 module "keyvault" {
   source                  = "./modules/keyvault"
-  keyvault_name           = local.keyvault_name
+  key_vault_name          = local.key_vault_name
   tags                    = var.default_tags
   tenant_id               = data.azurerm_client_config.current.tenant_id
   user_principle_id       = data.azurerm_client_config.current.object_id

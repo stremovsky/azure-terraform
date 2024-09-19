@@ -16,7 +16,7 @@ output "kube_config" {
   sensitive = true
 }
 
-output "tetant_id" {
+output "tenant_id" {
   value = data.azurerm_client_config.current.tenant_id
 }
 
@@ -30,6 +30,10 @@ output "workload_identity_name" {
 
 output "keyvault_url" {
   value = module.keyvault.key_vault_uri
+}
+
+output "keyvault_name" {
+  value = module.keyvault.key_vault_name
 }
 
 output "current_user_principle_id" {
