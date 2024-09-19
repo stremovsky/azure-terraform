@@ -19,7 +19,13 @@ provider "helm" {
   }
 }
 
+#data "azurerm_kubernetes_cluster" "akscluster" {
+#  name                = module.aks_cluster[0].cluster_name
+#  resource_group_name = data.azurerm_resource_group.aks_rg.name
+#}
+
 resource "helm_release" "cert_manager" {
+  count      = 0
   name       = "cert-manager"
   namespace  = "cert-manager"
   chart      = "cert-manager"
@@ -33,11 +39,11 @@ resource "helm_release" "cert_manager" {
     value = "true"
   }
 
-  depends_on = [module.aks_cluster[0].kube_config, local_file.kubeconfig]
+  depends_on = [module.aks_cluster[0].kube_config]
 }
 
 resource "kubernetes_manifest" "cluster_issuer" {
-  count = 1
+  count = 0
   manifest = {
     apiVersion = "cert-manager.io/v1"
     kind       = "ClusterIssuer"
@@ -61,12 +67,10 @@ resource "kubernetes_manifest" "cluster_issuer" {
       }
     }
   }
-  depends_on = [helm_release.cert_manager]
-  //depends_on = [module.aks_cluster[0].kube_config, local_file.kubeconfig, helm_release.cert_manager]
 }
 
 resource "kubernetes_manifest" "app_service_account" {
-  count = 1
+  count = 0
   manifest = {
     apiVersion = "v1"
     kind       = "ServiceAccount"
@@ -80,6 +84,7 @@ resource "kubernetes_manifest" "app_service_account" {
   }
 }
 
+
 #helm install ingress-nginx ingress-nginx/ingress-nginx --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"="/healthz" --set controller.service.externalTrafficPolicy=Local
 #kubectl patch configmap ingress-nginx-controller -n default --type merge -p '{"data":{"allow-snippet-annotations":"true"}}'
 #{{- if .Values.controller.allowSnippetAnnotations }}
@@ -87,7 +92,7 @@ resource "kubernetes_manifest" "app_service_account" {
 #{{- end }}
 
 resource "helm_release" "ingress_nginx" {
-  count      = 1
+  count      = 0
   name       = "ingress-nginx"
   namespace  = "ingress-nginx"
   chart      = "ingress-nginx"
@@ -107,4 +112,5 @@ resource "helm_release" "ingress_nginx" {
 
   # Optionally, create the namespace if it doesn't exist
   create_namespace = true
+  depends_on       = [module.aks_cluster[0].kube_config]
 }

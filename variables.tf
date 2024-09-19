@@ -84,12 +84,6 @@ variable "location" {
   default     = "westus"
 }
 
-variable "cluster_name" {
-  description = "Name of the AKS cluster"
-  type        = string
-  default     = "kubernetes-eus1-playground"
-}
-
 variable "dns_prefix" {
   description = "DNS prefix for the AKS cluster"
   type        = string

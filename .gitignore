@@ -3,4 +3,5 @@
 .terraform.lock.hcl
 terraform.tfstate
 terraform.tfstate.backup
-infra/charts
+infra-chart/charts
+kubeconfig
