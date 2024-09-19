@@ -12,7 +12,7 @@ if [[ -z "$WORKLOAD_IDENTITY_NAME" ]]; then
     exit
 fi
 
-cd infra
+cd infra-chart
 mkdir -p charts
 helm dependency update
 cd ..
@@ -21,8 +21,8 @@ cd ..
 
 helm install infra ./infra-chart \
   --namespace infra --create-namespace \
-  --set serviceAccount.workloadClientId=$WORKLOAD_CLIENT_ID \
-  --set serviceAccount.serviceAccountName=$WORKLOAD_IDENTITY_NAME
+  --set serviceAccount.name=$WORKLOAD_IDENTITY_NAME \
+  --set serviceAccount.workloadClientId=$WORKLOAD_CLIENT_ID
 
 # helm delete infra --namespace infra
 # kubectl delete -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.3/cert-manager.crds.yaml
