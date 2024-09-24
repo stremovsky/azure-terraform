@@ -43,7 +43,9 @@ cd ..
 
 #OLD_CONTEXT=$(kubectl config current-context)
 
-echo "Merge kubernetes configuration"
+echo "Sync kubernetes configuration"
+echo "Cluster name: $CLUSTER_NAME"
+
 az aks get-credentials --resource-group $RESOURCE_GROUP_NAME --name $CLUSTER_NAME
 kubectl config set-context $CLUSTER_NAME
 
