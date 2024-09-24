@@ -11,10 +11,10 @@ output "resource_group_name" {
   description = "The parent cluster resource group name"
 }
 
-output "kube_config" {
-  value     = local_file.kubeconfig[0].filename
-  sensitive = true
-}
+#output "kube_config" {
+#  value     = local_file.kubeconfig[0].filename
+#  sensitive = true
+#}
 
 output "tenant_id" {
   value = data.azurerm_client_config.current.tenant_id

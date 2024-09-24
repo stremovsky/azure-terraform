@@ -171,8 +171,8 @@ module "nsg" {
 }
 
 # Write the kubeconfig to a file (optional)
-resource "local_file" "kubeconfig" {
-  count    = var.aks_enabled ? 1 : 0
-  filename = "${path.module}/kubeconfig"
-  content  = module.aks_cluster[0].kube_config
-}
+#resource "local_file" "kubeconfig" {
+#  count    = var.aks_enabled ? 1 : 0
+#  filename = "${path.module}/kubeconfig"
+#  content  = module.aks_cluster[0].kube_config
+#}

@@ -1,7 +1,6 @@
 
 provider "kubernetes" {
   #config_path = "~/.kube/config"
-  #config_path = "${path.module}/kubeconfig"
   host                   = module.aks_cluster[0].aks_host
   client_certificate     = base64decode(module.aks_cluster[0].client_certificate)
   client_key             = base64decode(module.aks_cluster[0].client_key)
@@ -11,7 +10,6 @@ provider "kubernetes" {
 provider "helm" {
   kubernetes {
     #config_path = "~/.kube/config"
-    #config_path = "${path.module}/kubeconfig"
     host                   = module.aks_cluster[0].aks_host
     client_certificate     = base64decode(module.aks_cluster[0].client_certificate)
     client_key             = base64decode(module.aks_cluster[0].client_key)
