@@ -8,11 +8,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
   private_cluster_enabled = var.aks_private
 
   default_node_pool {
-    name                        = var.system_node_pool_name
-    vm_size                     = var.system_vm_size
-    min_count                   = var.system_min_count
-    max_count                   = var.system_max_count
-    node_count                  = var.system_node_count
+    name      = var.system_node_pool_name
+    vm_size   = var.system_vm_size
+    min_count = var.system_min_count
+    max_count = var.system_max_count
+    #node_count                  = var.system_node_count
     enable_node_public_ip       = var.enable_node_public_ip
     temporary_name_for_rotation = "akstemppool"
     enable_auto_scaling         = true
@@ -69,4 +69,14 @@ resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
   enable_node_public_ip = var.enable_node_public_ip
   node_labels           = var.app_node_pool_labels
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
+}
+
+// Grant read access to the AKS subnet
+resource "azurerm_role_assignment" "network_contributor" {
+  #principal_id         = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
+  #role_definition_name = "Network Contributor"
+  #role_definition_name = "Reader"
+  role_definition_name = "Owner"
+  principal_id         = azurerm_kubernetes_cluster.aks.identity[0].principal_id
+  scope                = var.vnet_subnet_id
 }
