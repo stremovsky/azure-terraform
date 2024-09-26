@@ -9,9 +9,11 @@ resource "azurerm_key_vault" "kv" {
   tenant_id           = var.tenant_id
 
   soft_delete_retention_days = 7
-  purge_protection_enabled   = false
   enable_rbac_authorization  = true
   sku_name                   = "standard"
+
+  purge_protection_enabled      = var.purge_protection_enabled
+  public_network_access_enabled = var.public_network_access_enabled
 }
 
 # Grant RBAC permissions on the Azure Key Vault to the current user

@@ -12,6 +12,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     vm_size   = var.system_vm_size
     min_count = var.system_min_count
     max_count = var.system_max_count
+    # do not enforce node count to kill existing nodes in cluster
     #node_count                  = var.system_node_count
     enable_node_public_ip       = var.enable_node_public_ip
     temporary_name_for_rotation = "akstemppool"
@@ -32,6 +33,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
     load_balancer_sku   = var.load_balancer_sku
   }
 
+  workload_autoscaler_profile {
+    keda_enabled = true
+  }
   identity {
     type = "SystemAssigned"
   }
@@ -56,15 +60,16 @@ resource "azurerm_kubernetes_cluster" "aks" {
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
-  name                  = var.app_node_pool_name
-  tags                  = var.tags
-  enable_auto_scaling   = true
-  vm_size               = var.app_vm_size
-  os_disk_size_gb       = var.app_disk_size
-  os_type               = var.app_os_type
-  max_count             = var.app_max_count
-  min_count             = var.app_min_count
-  node_count            = var.app_node_count
+  name                = var.app_node_pool_name
+  tags                = var.tags
+  enable_auto_scaling = true
+  vm_size             = var.app_vm_size
+  os_disk_size_gb     = var.app_disk_size
+  os_type             = var.app_os_type
+  max_count           = var.app_max_count
+  min_count           = var.app_min_count
+  # do not enforce node count to kill existing nodes in cluster
+  #node_count            = var.app_node_count
   vnet_subnet_id        = var.vnet_subnet_id
   enable_node_public_ip = var.enable_node_public_ip
   node_labels           = var.app_node_pool_labels

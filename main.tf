@@ -98,13 +98,15 @@ module "keyvault" {
   resource_group_name     = data.azurerm_resource_group.aks_rg.name
   location                = data.azurerm_resource_group.aks_rg.location
   aks_kubelet_identity_id = module.aks_cluster[0].aks_kubelet_identity_id
+
+  public_network_access_enabled = true
 }
 
 #module "keyvault" {
 #  source  = "claranet/keyvault/azurerm"
 #  version = "7.5.0"
 
-#  custom_name         = local.keyvault_name
+#  custom_name         = local.key_vault_name
 #  client_name         = var.whitelabel
 #  environment         = var.environment_name
 #  location            = data.azurerm_resource_group.aks_rg.location
@@ -117,7 +119,7 @@ module "keyvault" {
 
 # WebApp or other applications Object IDs
 #  reader_objects_ids = [
-#    #var.webapp_service_principal_id
+#var.webapp_service_principal_id
 #  ]
 
 # Current user should be here to be able to create keys and secrets
@@ -128,7 +130,7 @@ module "keyvault" {
 # Specify Network ACLs
 #  network_acls = {
 #    bypass         = "AzureServices"
-#    default_action = "Deny" # was Allow
+#    default_action = "Allow"
 #  }
 #}
 

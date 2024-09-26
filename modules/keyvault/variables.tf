@@ -29,6 +29,18 @@ variable "user_principle_id" {
   type        = string
 }
 
+variable "public_network_access_enabled" {
+  description = "Whether to allow public network access to the Key Vault."
+  type        = bool
+  default     = false
+}
+
+variable "purge_protection_enabled" {
+  description = "Whether to enable purge protection for the Key Vault."
+  type        = bool
+  default     = false
+}
+
 # Tags
 variable "tags" {
   description = "Tags to apply to the resources"
