@@ -26,11 +26,11 @@ kubectl create secret generic datadog-secret --from-literal api-key=$APIKEY --fr
 
 helm repo add datadog https://helm.datadoghq.com
 helm repo update
-helm upgrade "datadog" -f ./datadog_azure.yaml --set datadog.clusterName="k-testing-eus1" datadog/datadog
+helm upgrade "datadog" -f ./datadog_azure.yaml --set datadog.clusterName="$CLUSTER_NAME" datadog/datadog
 
 if helm status datadog --namespace default &> /dev/null; then
     echo "Helm release 'datadog' is already installed."
-    helm upgrade "datadog" -f ./datadog_azure.yaml --set datadog.clusterName="k-testing-eus1" datadog/datadog
+    helm upgrade "datadog" -f ./datadog_azure.yaml --set datadog.clusterName="$CLUSTER_NAME" datadog/datadog
 else
-    helm install "datadog" -f ./datadog_azure.yaml --set datadog.clusterName="k-testing-eus1" datadog/datadog
+    helm install "datadog" -f ./datadog_azure.yaml --set datadog.clusterName="$CLUSTER_NAME" datadog/datadog
 fi
