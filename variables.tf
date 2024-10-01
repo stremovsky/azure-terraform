@@ -122,7 +122,21 @@ variable "default_tags" {
   }
 }
 
+variable "app_node_pool_enable" {
+  type    = bool
+  default = false
+}
+
+variable "gpu_node_pool_enable" {
+  type    = bool
+  default = false
+}
+
 variable "app_node_pool_labels" {
+  type = map(string)
+}
+
+variable "gpu_node_pool_labels" {
   type = map(string)
 }
 

@@ -60,6 +60,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
+  count               = var.app_node_pool_enable ? 1 : 0
   name                = var.app_node_pool_name
   tags                = var.tags
   enable_auto_scaling = true
@@ -73,6 +74,24 @@ resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
   vnet_subnet_id        = var.vnet_subnet_id
   enable_node_public_ip = var.enable_node_public_ip
   node_labels           = var.app_node_pool_labels
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
+}
+
+resource "azurerm_kubernetes_cluster_node_pool" "windows_gpu_node_pool" {
+  count               = var.gpu_node_pool_enable ? 1 : 0
+  name                = var.gpu_node_pool_name
+  tags                = var.tags
+  enable_auto_scaling = true
+  vm_size             = var.gpu_vm_size
+  os_disk_size_gb     = var.gpu_disk_size
+  os_type             = var.gpu_os_type
+  max_count           = var.gpu_max_count
+  min_count           = var.gpu_min_count
+  # do not enforce node count to kill existing nodes in cluster
+  #node_count            = var.app_node_count
+  vnet_subnet_id        = var.vnet_subnet_id
+  enable_node_public_ip = var.enable_node_public_ip
+  node_labels           = var.gpu_node_pool_labels
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
 }
 

@@ -96,6 +96,12 @@ variable "system_os_sku" {
 }
 
 # App nodepool configuration
+variable "app_node_pool_enable" {
+  description = "Enable app node pool"
+  type        = bool
+  default     = false
+}
+
 variable "app_node_pool_name" {
   description = "Name of the application node pool"
   type        = string
@@ -138,6 +144,59 @@ variable "app_disk_size" {
 }
 
 variable "app_node_pool_labels" {
+  type = map(string)
+}
+
+# GPU nodepool configuration
+variable "gpu_node_pool_enable" {
+  description = "Enable GPU node pool"
+  type        = bool
+  default     = false
+}
+
+variable "gpu_node_pool_name" {
+  description = "Name of the application node pool"
+  type        = string
+}
+
+variable "gpu_node_count" {
+  description = "Number of nodes in the application node pool"
+  type        = number
+  default     = 1
+}
+
+variable "gpu_min_count" {
+  description = "Minimum number of nodes in the application node pool for autoscaling"
+  type        = number
+  default     = 1
+}
+
+variable "gpu_max_count" {
+  description = "Maximum number of nodes in the application node pool for autoscaling"
+  type        = number
+  default     = 10
+}
+
+variable "gpu_os_type" {
+  description = "Operating system type for the application node pool (e.g., Linux, Windows)"
+  type        = string
+  default     = "Windows"
+}
+
+variable "gpu_vm_size" {
+  description = "VM size for the nodes in the application node pool"
+  type        = string
+  default     = "Standard_NC8as_T4_v3"
+  # "Standard_D4_v5"
+}
+
+variable "gpu_disk_size" {
+  description = "Disk size (in GB) for the application node pool"
+  type        = number
+  default     = 256
+}
+
+variable "gpu_node_pool_labels" {
   type = map(string)
 }
 
