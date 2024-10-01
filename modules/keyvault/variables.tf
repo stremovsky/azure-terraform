@@ -41,6 +41,28 @@ variable "purge_protection_enabled" {
   default     = false
 }
 
+variable "network_acls" {
+  type = object({
+    default_action             = string
+    bypass                     = string
+    virtual_network_subnet_ids = list(string)
+  })
+  description = "Key Vault network ACLs settings"
+  default = {
+    default_action             = "Deny"
+    bypass                     = "AzureServices"
+    virtual_network_subnet_ids = []
+  }
+}
+
+variable "subnet_id" {
+  type = string
+}
+
+variable "vnet_id" {
+  type = string
+}
+
 # Tags
 variable "tags" {
   description = "Tags to apply to the resources"
