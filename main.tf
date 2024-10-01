@@ -9,6 +9,7 @@ locals {
   system_node_pool_name = "default"
   # For Windows node pools, the length must be between 1-6 characters.
   app_node_pool_name = "wpool"
+  gpu_node_pool_name = "wingpu"
 }
 
 provider "azurerm" {
@@ -61,8 +62,14 @@ module "aks_cluster" {
   #node_resource_group    = data.azurerm_resource_group.node_rg.name
   node_resource_group   = "MC_${var.aks_cluster_resource_group_name}"
   system_node_pool_name = local.system_node_pool_name
-  app_node_pool_name    = local.app_node_pool_name
-  app_node_pool_labels  = var.app_node_pool_labels
+
+  app_node_pool_name   = local.app_node_pool_name
+  gpu_node_pool_name   = local.gpu_node_pool_name
+  app_node_pool_enable = var.app_node_pool_enable
+  gpu_node_pool_enable = var.gpu_node_pool_enable
+  app_node_pool_labels = var.app_node_pool_labels
+  gpu_node_pool_labels = var.gpu_node_pool_labels
+
   location              = data.azurerm_resource_group.aks_rg.location
   enable_node_public_ip = var.enable_node_public_ip
   cluster_name          = local.cluster_name
@@ -89,6 +96,7 @@ module "registry" {
   resource_group_name     = var.registry_resource_group_name
 }
 
+/*
 module "keyvault" {
   source                  = "./modules/keyvault"
   key_vault_name          = local.key_vault_name
@@ -99,40 +107,87 @@ module "keyvault" {
   location                = data.azurerm_resource_group.aks_rg.location
   aks_kubelet_identity_id = module.aks_cluster[0].aks_kubelet_identity_id
 
-  public_network_access_enabled = true
+  subnet_id = module.vnet.aks_subnet_id
+  vnet_id   = module.vnet.vnet_id
+
+  public_network_access_enabled = false
+  network_acls = {
+    default_action = "Allow"
+    bypass         = "AzureServices"
+
+    virtual_network_subnet_ids = [
+      module.vnet.aks_subnet_id # Existing subnet where the service endpoint is configured
+    ]
+  }
+}
+*/
+
+module "keyvault" {
+  source  = "claranet/keyvault/azurerm"
+  version = "7.5.0"
+
+  custom_name          = local.key_vault_name
+  client_name          = var.whitelabel
+  environment          = var.environment_name
+  location             = data.azurerm_resource_group.aks_rg.location
+  location_short       = data.azurerm_resource_group.aks_rg.location
+  resource_group_name  = data.azurerm_resource_group.aks_rg.name
+  stack                = "stack1"
+  extra_tags           = var.default_tags
+  default_tags_enabled = false
+
+
+  rbac_authorization_enabled = true
+  logs_destinations_ids      = []
+
+  purge_protection_enabled = false
+
+  # WebApp or other applications Object IDs
+  #  reader_objects_ids = [
+  #var.webapp_service_principal_id
+  #  ]
+
+  # Current user should be here to be able to create keys and secrets
+  admin_objects_ids = [
+    data.azurerm_client_config.current.object_id
+  ]
+
+  # Specify Network ACLs
+  network_acls = {
+    default_action = "Allow"
+    bypass         = "AzureServices"
+
+    virtual_network_subnet_ids = [
+      module.vnet.aks_subnet_id # Existing subnet where the service endpoint is configured
+    ]
+  }
 }
 
-#module "keyvault" {
-#  source  = "claranet/keyvault/azurerm"
-#  version = "7.5.0"
+module "keyvault_private_endpoint" {
+  source  = "claranet/private-endpoint/azurerm"
+  version = "7.0.3"
 
-#  custom_name         = local.key_vault_name
-#  client_name         = var.whitelabel
-#  environment         = var.environment_name
-#  location            = data.azurerm_resource_group.aks_rg.location
-#  location_short      = data.azurerm_resource_group.aks_rg.location
-#  resource_group_name = data.azurerm_resource_group.aks_rg.name
-#  stack               = "stack1"
+  location             = data.azurerm_resource_group.aks_rg.location
+  location_short       = data.azurerm_resource_group.aks_rg.location
+  client_name          = var.whitelabel
+  environment          = var.environment_name
+  stack                = "stack1"
+  extra_tags           = var.default_tags
+  default_tags_enabled = false
 
-#  rbac_authorization_enabled = true
-#  logs_destinations_ids = []
+  resource_group_name = data.azurerm_resource_group.aks_rg.name
 
-# WebApp or other applications Object IDs
-#  reader_objects_ids = [
-#var.webapp_service_principal_id
-#  ]
+  name_suffix = "pv"
 
-# Current user should be here to be able to create keys and secrets
-#  admin_objects_ids = [
-#    data.azurerm_client_config.current.object_id
-#  ]
+  #custom_private_endpoint_nic_name = "bar"
 
-# Specify Network ACLs
-#  network_acls = {
-#    bypass         = "AzureServices"
-#    default_action = "Allow"
-#  }
-#}
+  subnet_id = module.vnet.aks_subnet_id
+
+  target_resource             = module.keyvault.key_vault_id
+  subresource_name            = "vault"
+  private_dns_zones_names     = ["privatelink.vaultcore.azure.net"]
+  private_dns_zones_vnets_ids = [module.vnet.vnet_id]
+}
 
 module "identity" {
   source                 = "./modules/identity"
