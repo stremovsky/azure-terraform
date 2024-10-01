@@ -22,15 +22,16 @@ echo
 read -p "Enter API key (uuid string): " APIKEY
 read -p "Enter APP key: " APPKEY
 
-kubectl create secret generic datadog-secret --from-literal api-key=$APIKEY --from-literal app-key=$APPKEY
+kubectl create namespace datadog
+kubectl create secret generic datadog-secret --namespace datadog --from-literal api-key=$APIKEY --from-literal app-key=$APPKEY
 
 helm repo add datadog https://helm.datadoghq.com
 helm repo update
 helm upgrade "datadog" -f ./datadog_azure.yaml --set datadog.clusterName="$CLUSTER_NAME" datadog/datadog
 
-if helm status datadog --namespace default &> /dev/null; then
+if helm status datadog --namespace datadog &> /dev/null; then
     echo "Helm release 'datadog' is already installed."
-    helm upgrade "datadog" -f ./datadog_azure.yaml --set datadog.clusterName="$CLUSTER_NAME" datadog/datadog
+    helm upgrade "datadog" -f ./datadog_azure.yaml --namespace datadog --set datadog.clusterName="$CLUSTER_NAME" datadog/datadog
 else
-    helm install "datadog" -f ./datadog_azure.yaml --set datadog.clusterName="$CLUSTER_NAME" datadog/datadog
+    helm install "datadog" -f ./datadog_azure.yaml --namespace datadog --set datadog.clusterName="$CLUSTER_NAME" datadog/datadog
 fi
