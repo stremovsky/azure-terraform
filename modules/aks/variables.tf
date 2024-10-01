@@ -144,7 +144,8 @@ variable "app_disk_size" {
 }
 
 variable "app_node_pool_labels" {
-  type = map(string)
+  type    = map(string)
+  default = {}
 }
 
 # GPU nodepool configuration
@@ -197,7 +198,8 @@ variable "gpu_disk_size" {
 }
 
 variable "gpu_node_pool_labels" {
-  type = map(string)
+  type    = map(string)
+  default = {}
 }
 
 # Networking Configuration

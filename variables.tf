@@ -133,11 +133,13 @@ variable "gpu_node_pool_enable" {
 }
 
 variable "app_node_pool_labels" {
-  type = map(string)
+  type    = map(string)
+  default = {}
 }
 
 variable "gpu_node_pool_labels" {
-  type = map(string)
+  type    = map(string)
+  default = {}
 }
 
 variable "environment_name" {

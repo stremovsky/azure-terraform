@@ -185,7 +185,7 @@ module "keyvault_private_endpoint" {
 
   target_resource             = module.keyvault.key_vault_id
   subresource_name            = "vault"
-  private_dns_zones_names     = ["privatelink.vaultcore.azure.net"]
+  private_dns_zones_names     = ["privatelink-${var.environment_name}.vaultcore.azure.net"]
   private_dns_zones_vnets_ids = [module.vnet.vnet_id]
 }
 
@@ -199,7 +199,7 @@ module "identity" {
   workload_identity_name = local.workload_identity_name
 }
 
-# Create Bastion host
+# Create Bastion host - not used
 module "bastion" {
   count               = var.enable_bastion ? 1 : 0
   source              = "./modules/bastion"
@@ -212,7 +212,7 @@ module "bastion" {
   vnet_subnet_id = module.vnet.bastion_subnet_id
 }
 
-# Allow SSH, ICMP
+# Allow SSH, ICMP - not used
 module "nsg" {
   count               = var.enable_nsg ? 1 : 0
   source              = "./modules/nsg"
