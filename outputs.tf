@@ -1,9 +1,9 @@
 output "cluster_name" {
-  value = module.aks_cluster[0].cluster_name
+  value = var.aks_enabled ? module.aks_cluster[0].cluster_name : "null"
 }
 
 output "aks_oidc_issuer_url" {
-  value = module.aks_cluster[0].oidc_issuer_url
+  value = var.aks_enabled ? module.aks_cluster[0].oidc_issuer_url : "null"
 }
 
 output "resource_group_name" {

@@ -54,6 +54,42 @@ module "vnet" {
   bastion_subnet_cidr   = var.bastion_subnet_cidr
 }
 
+/*
+module "kv_private_dns_zone" {
+  source  = "claranet/private-endpoint/azurerm//modules/private-dns-zone"
+  version = "7.0.3"
+
+  stack                = "stack1"
+  extra_tags           = var.default_tags
+  default_tags_enabled = false
+  resource_group_name  = data.azurerm_resource_group.aks_rg.name
+  environment          = var.environment_name
+
+  private_dns_zone_name      = "${var.environment_name}.privatelink.eastus.azmk8s.io"
+  private_dns_zone_vnets_ids = [module.vnet.vnet_id]
+}
+
+# User Assigned Managed Identity (UAMI)
+resource "azurerm_user_assigned_identity" "aks_identity" {
+  name                = "aks-identity-${var.environment_name}"
+  resource_group_name = data.azurerm_resource_group.aks_rg.name
+  location            = data.azurerm_resource_group.aks_rg.location
+}
+
+# Assign Role to the Managed Identity to manage the Private DNS Zone
+resource "azurerm_role_assignment" "dns_zone_contributor" {
+  principal_id         = azurerm_user_assigned_identity.aks_identity.principal_id
+  role_definition_name = "Private DNS Zone Contributor"
+  scope                = module.kv_private_dns_zone.private_dns_zone_id
+}
+
+resource "azurerm_role_assignment" "network_contributor" {
+  role_definition_name = "Owner"
+  principal_id         = azurerm_user_assigned_identity.aks_identity.principal_id
+  scope                = module.vnet.aks_subnet_id
+}
+*/
+
 # Create AKS cluster
 module "aks_cluster" {
   count               = var.aks_enabled ? 1 : 0
@@ -62,6 +98,9 @@ module "aks_cluster" {
   #node_resource_group    = data.azurerm_resource_group.node_rg.name
   node_resource_group   = "MC_${var.aks_cluster_resource_group_name}"
   system_node_pool_name = local.system_node_pool_name
+
+  aks_private = var.aks_private
+  #private_dns_zone_id = module.kv_private_dns_zone.private_dns_zone_id
 
   app_node_pool_name   = local.app_node_pool_name
   gpu_node_pool_name   = local.gpu_node_pool_name
@@ -73,7 +112,7 @@ module "aks_cluster" {
   location              = data.azurerm_resource_group.aks_rg.location
   enable_node_public_ip = var.enable_node_public_ip
   cluster_name          = local.cluster_name
-  dns_prefix            = var.dns_prefix
+  dns_prefix            = "aks${var.environment_name}"
   system_vm_size        = var.system_vm_size
   vnet_subnet_id        = module.vnet.aks_subnet_id
   tags                  = var.default_tags
@@ -84,10 +123,18 @@ module "aks_cluster" {
   # "172.16.0.0/20"
   pod_cidr     = var.aks_pods_subnet_cidr
   ssh_key_file = ""
+
+  identity = {
+    type = "SystemAssigned"
+    #type = "UserAssigned"
+    # Reference the UAMI
+    #identity_id = azurerm_user_assigned_identity.aks_identity.id
+  }
 }
 
 module "registry" {
   source                  = "./modules/registry"
+  count                   = var.aks_enabled ? 1 : 0
   registry_name           = var.registry_name
   tags                    = var.default_tags
   create_registry         = var.create_registry
@@ -163,6 +210,34 @@ module "keyvault" {
   }
 }
 
+data "azurerm_resources" "dns" {
+  name                = "privatelink.vaultcore.azure.net"
+  resource_group_name = length(var.vnet_resource_group_name) > 0 ? var.vnet_resource_group_name : data.azurerm_resource_group.aks_rg.name
+  type                = "Microsoft.Network/privateDnsZones"
+}
+
+/*
+module "kv_private_dns_zone" {
+  source  = "claranet/private-endpoint/azurerm//modules/private-dns-zone"
+  version = "7.0.3"
+
+  #count = length(data.azurerm_resources.dns.resources) == 0 ? 1 : 0
+  #lifecycle {
+  #  prevent_destroy = true  # Prevent deletion during future runs
+  #}
+
+  stack                = "stack1"
+  extra_tags           = var.default_tags
+  default_tags_enabled = false
+  resource_group_name  = length(var.vnet_resource_group_name) > 0 ? var.vnet_resource_group_name : data.azurerm_resource_group.aks_rg.name
+  environment          = var.environment_name
+
+  private_dns_zone_name      = "privatelink.vaultcore.azure.net"
+  private_dns_zone_vnets_ids = [module.vnet.vnet_id]
+}
+*/
+
+# Create Private Endpoint for Key Vault
 module "keyvault_private_endpoint" {
   source  = "claranet/private-endpoint/azurerm"
   version = "7.0.3"
@@ -183,10 +258,23 @@ module "keyvault_private_endpoint" {
 
   subnet_id = module.vnet.aks_subnet_id
 
-  target_resource             = module.keyvault.key_vault_id
-  subresource_name            = "vault"
-  private_dns_zones_names     = ["privatelink-${var.environment_name}.vaultcore.azure.net"]
-  private_dns_zones_vnets_ids = [module.vnet.vnet_id]
+  target_resource  = module.keyvault.key_vault_id
+  subresource_name = "vault"
+
+  #private_dns_zones_names     = ["privatelink.vaultcore.azure.net"]
+  #private_dns_zones_vnets_ids = [module.vnet.vnet_id]
+  #private_dns_zones_ids = [length(data.azurerm_resources.dns.resources) == 0 ? module.kv_private_dns_zone[0].private_dns_zone_id : data.azurerm_resources.dns.resources.0.id]
+  private_dns_zones_ids = [data.azurerm_resources.dns.resources.0.id]
+  #private_dns_zones_ids = [module.kv_private_dns_zone[0].private_dns_zone_id]
+}
+
+
+resource "azurerm_private_dns_a_record" "keyvault_dns_record" {
+  name                = local.key_vault_name # Name of your Key Vault
+  zone_name           = "privatelink.vaultcore.azure.net"
+  resource_group_name = length(var.vnet_resource_group_name) > 0 ? var.vnet_resource_group_name : data.azurerm_resource_group.aks_rg.name
+  ttl                 = 3600
+  records             = [module.keyvault_private_endpoint.private_endpoint_ip_address]
 }
 
 module "identity" {
@@ -195,7 +283,7 @@ module "identity" {
   location               = data.azurerm_resource_group.aks_rg.location
   keyvault_id            = module.keyvault.key_vault_id
   resource_group_name    = data.azurerm_resource_group.aks_rg.name
-  oidc_issuer_url        = module.aks_cluster[0].oidc_issuer_url
+  oidc_issuer_url        = var.aks_enabled ? module.aks_cluster[0].oidc_issuer_url : null
   workload_identity_name = local.workload_identity_name
 }
 

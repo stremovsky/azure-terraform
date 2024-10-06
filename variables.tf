@@ -4,6 +4,12 @@ variable "aks_enabled" {
   default     = true
 }
 
+variable "aks_private" {
+  description = "Flag to enable or disable private AKS cluster"
+  type        = bool
+  default     = false
+}
+
 variable "enable_node_public_ip" {
   description = "Flag to enable or disable public IP assigned to kunernetes nodes"
   type        = bool
@@ -111,7 +117,8 @@ variable "max_count" {
 variable "system_vm_size" {
   description = "VM size for the nodes in the default node pool"
   type        = string
-  default     = "Standard_DS2_v2"
+  #default     = "Standard_DS2_v2" # 2 vCPU 8GB 	x64
+  default = "Standard_D2ps_v5" # 2 vCPU 8GB 	x64
 }
 
 variable "default_tags" {

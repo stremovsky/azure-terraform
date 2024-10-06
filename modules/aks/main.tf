@@ -1,10 +1,11 @@
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                    = var.cluster_name
-  tags                    = var.tags
-  location                = var.location
-  dns_prefix              = var.dns_prefix
-  resource_group_name     = var.resource_group_name
-  node_resource_group     = var.node_resource_group
+  name                = var.cluster_name
+  tags                = var.tags
+  location            = var.location
+  dns_prefix          = var.dns_prefix
+  resource_group_name = var.resource_group_name
+  node_resource_group = var.node_resource_group
+  #private_dns_zone_id     = var.private_dns_zone_id
   private_cluster_enabled = var.aks_private
 
   default_node_pool {
@@ -37,7 +38,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
     keda_enabled = true
   }
   identity {
-    type = "SystemAssigned"
+    //type = "SystemAssigned"
+    type = var.identity.type
+    //identity_ids = [var.identity.identity_id]
   }
   # Enable OIDC issuer URL
   oidc_issuer_enabled = true

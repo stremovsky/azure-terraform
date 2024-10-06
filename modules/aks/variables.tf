@@ -25,7 +25,7 @@ variable "cluster_name" {
 variable "aks_private" {
   description = "Indicates if the cluster should be private or public"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "dns_prefix" {
@@ -74,7 +74,8 @@ variable "system_max_count" {
 variable "system_vm_size" {
   description = "VM size for the nodes in the system node pool"
   type        = string
-  default     = "Standard_DS2_v2"
+  #default     = "Standard_DS2_v2" # 2 vCPU 8GB 	x64
+  default = "Standard_D2ps_v5" # 2 vCPU 8GB 	x64
 }
 
 variable "system_disk_size" {
@@ -140,7 +141,7 @@ variable "app_vm_size" {
 variable "app_disk_size" {
   description = "Disk size (in GB) for the application node pool"
   type        = number
-  default     = 256
+  default     = 2048
 }
 
 variable "app_node_pool_labels" {
@@ -254,9 +255,19 @@ variable "pod_cidr" {
   type        = string
 }
 
+variable "private_dns_zone_id" {
+  description = "ID of the private DNS zone for the cluster"
+  type        = string
+  default     = null
+}
+
 # Tags
 variable "tags" {
   description = "Tags to apply to the resources"
   type        = map(string)
   default     = {}
+}
+
+variable "identity" {
+  type = map(string)
 }
