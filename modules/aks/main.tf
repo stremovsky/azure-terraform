@@ -69,6 +69,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
   enable_auto_scaling = true
   vm_size             = var.app_vm_size
   os_disk_size_gb     = var.app_disk_size
+  os_disk_type        = var.app_disk_type
   os_type             = var.app_os_type
   max_count           = var.app_max_count
   min_count           = var.app_min_count
@@ -87,6 +88,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "windows_gpu_node_pool" {
   enable_auto_scaling = true
   vm_size             = var.gpu_vm_size
   os_disk_size_gb     = var.gpu_disk_size
+  os_disk_type        = var.gpu_disk_type
   os_type             = var.gpu_os_type
   max_count           = var.gpu_max_count
   min_count           = var.gpu_min_count

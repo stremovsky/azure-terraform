@@ -141,7 +141,13 @@ variable "app_vm_size" {
 variable "app_disk_size" {
   description = "Disk size (in GB) for the application node pool"
   type        = number
-  default     = 2048
+  default     = 256
+}
+
+variable "app_disk_type" {
+  description = "Disk type for the system node pool (e.g., Managed, Unmanaged)"
+  type        = string
+  default     = "Managed"
 }
 
 variable "app_node_pool_labels" {
@@ -195,7 +201,13 @@ variable "gpu_vm_size" {
 variable "gpu_disk_size" {
   description = "Disk size (in GB) for the application node pool"
   type        = number
-  default     = 256
+  default     = 350
+}
+
+variable "gpu_disk_type" {
+  description = "Disk type for the system node pool (e.g., Managed, Unmanaged)"
+  type        = string
+  default     = "Ephemeral"
 }
 
 variable "gpu_node_pool_labels" {

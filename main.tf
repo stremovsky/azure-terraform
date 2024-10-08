@@ -268,7 +268,6 @@ module "keyvault_private_endpoint" {
   #private_dns_zones_ids = [module.kv_private_dns_zone[0].private_dns_zone_id]
 }
 
-
 resource "azurerm_private_dns_a_record" "keyvault_dns_record" {
   name                = local.key_vault_name # Name of your Key Vault
   zone_name           = "privatelink.vaultcore.azure.net"
