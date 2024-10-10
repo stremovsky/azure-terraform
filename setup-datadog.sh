@@ -18,12 +18,15 @@ echo "Cluster name: $CLUSTER_NAME"
 az aks get-credentials --resource-group $RESOURCE_GROUP_NAME --name $CLUSTER_NAME
 kubectl config set-context $CLUSTER_NAME
 
-echo
-read -p "Enter API key (uuid string): " APIKEY
-read -p "Enter APP key: " APPKEY
-
-kubectl create namespace datadog
-kubectl create secret generic datadog-secret --namespace datadog --from-literal api-key=$APIKEY --from-literal app-key=$APPKEY
+if kubectl get secret datadog-secret -n datadog >/dev/null 2>&1; then
+  echo "Secret datadog-secret exists in namespace datadog."
+else
+  echo
+  read -p "Enter API key: " APIKEY
+  read -p "Enter APP key: " APPKEY
+  kubectl create namespace datadog
+  kubectl create secret generic datadog-secret --namespace datadog --from-literal api-key=$APIKEY --from-literal app-key=$APPKEY
+fi
 
 helm repo add datadog https://helm.datadoghq.com
 helm repo update
