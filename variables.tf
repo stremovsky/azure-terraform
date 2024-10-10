@@ -117,8 +117,7 @@ variable "max_count" {
 variable "system_vm_size" {
   description = "VM size for the nodes in the default node pool"
   type        = string
-  #default     = "Standard_DS2_v2" # 2 vCPU 8GB 	x64
-  default = "Standard_D2ps_v5" # 2 vCPU 8GB 	ARM64
+  default     = "Standard_D2ps_v5" # 2 vCPU 8GB RAM
 }
 
 variable "default_tags" {

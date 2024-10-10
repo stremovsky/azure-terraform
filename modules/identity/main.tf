@@ -30,6 +30,7 @@ resource "azurerm_role_assignment" "kv_access" {
 
 # Assign Key Vault Secrets User role to the Workload Identity
 resource "azurerm_federated_identity_credential" "workload_federated_identity" {
+  depends_on = [azurerm_role_assignment.kv_access]
   #count = var.oidc_issuer_url == null ? 0 : 1
   name                = "${var.workload_identity_name}-federated"
   resource_group_name = var.resource_group_name

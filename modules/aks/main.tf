@@ -98,6 +98,9 @@ resource "azurerm_kubernetes_cluster_node_pool" "windows_gpu_node_pool" {
   enable_node_public_ip = var.enable_node_public_ip
   node_labels           = var.gpu_node_pool_labels
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
+  #node_taints           = [
+  #      "sku=gpu:NoSchedule",
+  #]
 }
 
 // Grant read access to the AKS subnet

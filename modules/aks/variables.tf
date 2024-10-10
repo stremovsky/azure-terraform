@@ -74,14 +74,13 @@ variable "system_max_count" {
 variable "system_vm_size" {
   description = "VM size for the nodes in the system node pool"
   type        = string
-  #default     = "Standard_DS2_v2" # 2 vCPU 8GB 	x64
-  default = "Standard_D2ps_v5" # 2 vCPU 8GB 	x64
+  default     = "Standard_D2ps_v5" # 2 vCPU 8GB RAM
 }
 
 variable "system_disk_size" {
   description = "Disk size (in GB) for the system node pool"
   type        = number
-  default     = 40
+  default     = 100
 }
 
 variable "system_disk_type" {
@@ -176,7 +175,7 @@ variable "gpu_node_count" {
 variable "gpu_min_count" {
   description = "Minimum number of nodes in the application node pool for autoscaling"
   type        = number
-  default     = 1
+  default     = 0
 }
 
 variable "gpu_max_count" {
