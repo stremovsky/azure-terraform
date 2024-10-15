@@ -112,3 +112,48 @@ resource "azurerm_role_assignment" "network_contributor" {
   principal_id         = azurerm_kubernetes_cluster.aks.identity[0].principal_id
   scope                = var.vnet_subnet_id
 }
+
+data "azurerm_virtual_machine_scale_set" "windows_app_vmss" {
+  name                = "aks${var.app_node_pool_name}"
+  resource_group_name = var.node_resource_group
+  #kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
+  #kubernetes_cluster_name = azurerm_kubernetes_cluster.aks.name
+}
+
+# resource "azurerm_managed_disk" "disk_d" {
+#   name                 = "disk-d-2tb"
+#   location             = var.location
+#   resource_group_name  = var.node_resource_group
+#   storage_account_type = "Standard_LRS"
+#   disk_size_gb         = 128
+#   create_option        = "Empty"
+# }
+
+
+# resource "azurerm_virtual_machine_scale_set_extension" "add_disk_d" {
+#   name                         = "new-disk-d"
+#   virtual_machine_scale_set_id = data.azurerm_virtual_machine_scale_set.windows_gpu_vmss.id
+#   publisher = "Microsoft.Compute"
+#   type      = "CustomScriptExtension"
+#   #type_handler_version         = "2.0"
+#   type_handler_version = "1.10"
+#   settings = jsonencode({
+#     "commandToExecute" = "powershell -command 'Add-DataDisk -LUN 0 -DiskId ${azurerm_managed_disk.disk_d.id}'"
+#   })
+# }
+
+# resource "null_resource" "attach_disk_d" {
+#   depends_on = [data.azurerm_virtual_machine_scale_set.windows_app_vmss]
+#   # --sku : Underlying storage SKU.  Allowed values: PremiumV2_LRS, Premium_LRS,
+#   # Premium_ZRS, StandardSSD_LRS, StandardSSD_ZRS, Standard_LRS, UltraSSD_LRS.
+#   provisioner "local-exec" {
+#     command = <<EOT
+#       az vmss disk attach \
+#         --resource-group ${var.node_resource_group} \
+#         --vmss-name "aks${var.app_node_pool_name}" \
+#         --size-gb 2048 \
+#         --lun 0 \
+#         --caching ReadWrite
+#     EOT
+#   }
+# }

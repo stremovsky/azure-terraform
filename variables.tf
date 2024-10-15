@@ -114,6 +114,12 @@ variable "max_count" {
   default     = 10
 }
 
+variable "app_vm_size" {
+  description = "VM size for windows nodes in winpool node pool"
+  type        = string
+  default     = "Standard_D4_v5"
+}
+
 variable "system_vm_size" {
   description = "VM size for the nodes in the default node pool"
   type        = string

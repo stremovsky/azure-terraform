@@ -113,6 +113,7 @@ module "aks_cluster" {
   enable_node_public_ip = var.enable_node_public_ip
   cluster_name          = local.cluster_name
   dns_prefix            = "aks${var.environment_name}"
+  app_vm_size           = var.app_vm_size
   system_vm_size        = var.system_vm_size
   vnet_subnet_id        = module.vnet.aks_subnet_id
   tags                  = var.default_tags
