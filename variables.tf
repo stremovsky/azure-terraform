@@ -105,7 +105,7 @@ variable "node_count" {
 variable "min_count" {
   description = "Minimal number of nodes in the default node pool"
   type        = number
-  default     = 1
+  default     = 0
 }
 
 variable "max_count" {
@@ -118,6 +118,18 @@ variable "app_vm_size" {
   description = "VM size for windows nodes in winpool node pool"
   type        = string
   default     = "Standard_D4_v5"
+}
+
+variable "app_disk_type" {
+  description = "Disk type for the system node pool (e.g., Managed, Unmanaged)"
+  type        = string
+  default     = "Managed"
+}
+
+variable "app_disk_size" {
+  description = "Disk size (in GB) for the application node pool"
+  type        = number
+  default     = 300
 }
 
 variable "system_vm_size" {

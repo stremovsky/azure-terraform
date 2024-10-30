@@ -108,6 +108,8 @@ module "aks_cluster" {
   gpu_node_pool_enable = var.gpu_node_pool_enable
   app_node_pool_labels = var.app_node_pool_labels
   gpu_node_pool_labels = var.gpu_node_pool_labels
+  app_disk_type        = var.app_disk_type
+  app_disk_size        = var.app_disk_size
 
   location              = data.azurerm_resource_group.aks_rg.location
   enable_node_public_ip = var.enable_node_public_ip
@@ -314,10 +316,3 @@ module "nsg" {
   # Networking
   aks_subnet_id = module.vnet.aks_subnet_id
 }
-
-# Write the kubeconfig to a file (optional)
-#resource "local_file" "kubeconfig" {
-#  count    = var.aks_enabled ? 1 : 0
-#  filename = "${path.module}/kubeconfig"
-#  content  = module.aks_cluster[0].kube_config
-#}
