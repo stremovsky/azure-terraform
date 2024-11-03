@@ -36,6 +36,12 @@ if [[ -z "$WORKLOAD_IDENTITY_NAME" ]]; then
     exit
 fi
 
+LB_PUBLIC_IP=$(terraform output -raw lb_public_ip)
+if [[ -z "$LB_PUBLIC_IP" ]]; then
+    echo "Failed to get LB_PUBLIC_IP from terraform output"
+    exit
+fi
+
 cd infra-chart
 mkdir -p charts
 helm dependency update
@@ -58,14 +64,16 @@ if helm status infra --namespace infra &> /dev/null; then
         --set tenantId=$TENANT_ID \
         --set keyvaultName=$KEYVAULT_NAME \
         --set workloadName=$WORKLOAD_IDENTITY_NAME \
-        --set workloadClientId=$WORKLOAD_CLIENT_ID
+        --set workloadClientId=$WORKLOAD_CLIENT_ID \
+        --set ingress-nginx.controller.service.loadBalancerIP=$LB_PUBLIC_IP
 else
     helm install infra ./infra-chart \
         --namespace infra --create-namespace \
         --set tenantId=$TENANT_ID \
         --set keyvaultName=$KEYVAULT_NAME \
         --set workloadName=$WORKLOAD_IDENTITY_NAME \
-        --set workloadClientId=$WORKLOAD_CLIENT_ID
+        --set workloadClientId=$WORKLOAD_CLIENT_ID \
+        --set ingress-nginx.controller.service.loadBalancerIP=$LB_PUBLIC_IP
 fi
 
 # helm delete infra --namespace infra

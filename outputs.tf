@@ -39,3 +39,7 @@ output "keyvault_name" {
 output "current_user_principle_id" {
   value = data.azurerm_client_config.current.object_id
 }
+
+output "lb_public_ip" {
+  value = azurerm_public_ip.lb_public_ip.ip_address
+}

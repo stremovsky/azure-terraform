@@ -4,6 +4,7 @@ locals {
   key_vault_name         = "k-kv-${var.whitelabel_short}-${var.environment_name}-${var.region_name}"
   workload_identity_name = "k-id-${var.whitelabel_short}-${var.environment_name}-${var.region_name}"
   nsg_resourse_name      = "k-nsg-${var.whitelabel_short}-${var.environment_name}-${var.region_name}"
+  lb_public_ip_name      = "k-lbip-${var.whitelabel_short}-${var.environment_name}-${var.region_name}"
   bastion_name           = "k-bastion-${var.whitelabel_short}-${var.environment_name}-${var.region_name}"
   # For Linux node pools, the length must be between 1-12 characters.
   system_node_pool_name = "default"
@@ -287,6 +288,14 @@ module "identity" {
   resource_group_name    = data.azurerm_resource_group.aks_rg.name
   oidc_issuer_url        = var.aks_enabled ? module.aks_cluster[0].oidc_issuer_url : null
   workload_identity_name = local.workload_identity_name
+}
+
+resource "azurerm_public_ip" "lb_public_ip" {
+  name                = local.lb_public_ip_name
+  location            = data.azurerm_resource_group.aks_rg.location
+  resource_group_name = "MC_${var.aks_cluster_resource_group_name}"
+  allocation_method   = "Static"
+  sku                 = "Standard"
 }
 
 # Create Bastion host - not used
