@@ -1,43 +1,39 @@
 #!/bin/bash
 
-CLUSTER_NAME=$(terraform output -raw cluster_name)
-if [[ -z "$CLUSTER_NAME" ]]; then
+TERRAFORM_OUTPUT=$(terraform output -json)
+CLUSTER_NAME=$(echo "$TERRAFORM_OUTPUT" | jq -r '.cluster_name.value')
+KEYVAULT_NAME=$(echo "$TERRAFORM_OUTPUT" | jq -r '.keyvault_name.value')
+RESOURCE_GROUP_NAME=$(echo "$TERRAFORM_OUTPUT" | jq -r '.resource_group_name.value')
+TENANT_ID=$(echo "$TERRAFORM_OUTPUT" | jq -r '.tenant_id.value')
+WORKLOAD_CLIENT_ID=$(echo "$TERRAFORM_OUTPUT" | jq -r '.workload_webapp_identity_client_id.value')
+WORKLOAD_IDENTITY_NAME=$(echo "$TERRAFORM_OUTPUT" | jq -r '.workload_identity_name.value')
+LB_PUBLIC_IP=$(echo "$TERRAFORM_OUTPUT" | jq -r '.lb_public_ip.value')
+
+if [[ -z "$CLUSTER_NAME" || "$CLUSTER_NAME" == "null" ]]; then
     echo "Failed to get CLUSTER_NAME from terraform output"
-    exit
+    exit 1
 fi
-
-KEYVAULT_NAME=$(terraform output -raw keyvault_name)
-if [[ -z "$KEYVAULT_NAME" ]]; then
+if [[ -z "$KEYVAULT_NAME" || "$KEYVAULT_NAME" == "null" ]]; then
     echo "Failed to get KEYVAULT_NAME from terraform output"
-    exit
+    exit 1
 fi
-
-RESOURCE_GROUP_NAME=$(terraform output -raw resource_group_name)
-if [[ -z "$RESOURCE_GROUP_NAME" ]]; then
+if [[ -z "$RESOURCE_GROUP_NAME" || "$RESOURCE_GROUP_NAME" == "null" ]]; then
     echo "Failed to get RESOURCE_GROUP_NAME from terraform output"
-    exit
+    exit 1
 fi
-
-TENANT_ID=$(terraform output -raw tenant_id)
-if [[ -z "$TENANT_ID" ]]; then
+if [[ -z "$TENANT_ID" || "$TENANT_ID" == "null" ]]; then
     echo "Failed to get TENANT_ID from terraform output"
-    exit
+    exit 1
 fi
-
-WORKLOAD_CLIENT_ID=$(terraform output -raw workload_webapp_identity_client_id)
-if [[ -z "$WORKLOAD_CLIENT_ID" ]]; then
+if [[ -z "$WORKLOAD_CLIENT_ID" || "$WORKLOAD_CLIENT_ID" == "null" ]]; then
     echo "Failed to get WORKLOAD_CLIENT_ID from terraform output"
-    exit
+    exit 1
 fi
-
-WORKLOAD_IDENTITY_NAME=$(terraform output -raw workload_identity_name)
-if [[ -z "$WORKLOAD_IDENTITY_NAME" ]]; then
+if [[ -z "$WORKLOAD_IDENTITY_NAME" || "$WORKLOAD_IDENTITY_NAME" == "null" ]]; then
     echo "Failed to get WORKLOAD_IDENTITY_NAME from terraform output"
-    exit
+    exit 1
 fi
-
-LB_PUBLIC_IP=$(terraform output -raw lb_public_ip)
-if [[ -z "$LB_PUBLIC_IP" ]]; then
+if [[ -z "$LB_PUBLIC_IP" || "$LB_PUBLIC_IP" == "null" ]]; then
     echo "Failed to get LB_PUBLIC_IP from terraform output"
     exit
 fi
