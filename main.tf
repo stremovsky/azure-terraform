@@ -293,7 +293,7 @@ module "identity" {
 resource "azurerm_public_ip" "lb_public_ip" {
   name                = local.lb_public_ip_name
   location            = data.azurerm_resource_group.aks_rg.location
-  resource_group_name = "MC_${var.aks_cluster_resource_group_name}"
+  resource_group_name = var.aks_cluster_resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
 }
