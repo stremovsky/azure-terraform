@@ -1,5 +1,3 @@
-data "azurerm_client_config" "current" {}
-
 # Create Azure Key Vault resource
 resource "azurerm_key_vault" "kv" {
   name                = var.key_vault_name
@@ -78,7 +76,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "keyvault_dns_zone_link
 }
 
 resource "azurerm_private_dns_a_record" "keyvault_dns_record" {
-  name                = "k-kv-pt-dev-eus1" # Name of your Key Vault
+  name                = "k-kv-pt-${var.environment}-eus1" # Name of your Key Vault
   zone_name           = azurerm_private_dns_zone.keyvault_dns_zone.name
   resource_group_name = var.resource_group_name
   ttl                 = 3600
