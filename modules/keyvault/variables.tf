@@ -55,6 +55,10 @@ variable "network_acls" {
   }
 }
 
+variable "environment" {
+  type = string
+}
+
 variable "subnet_id" {
   type = string
 }
