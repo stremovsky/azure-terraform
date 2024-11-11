@@ -114,6 +114,7 @@ resource "azurerm_role_assignment" "network_contributor" {
 }
 
 data "azurerm_virtual_machine_scale_set" "windows_app_vmss" {
+  depends_on          = [azurerm_kubernetes_cluster_node_pool.windows_node_pool]
   name                = "aks${var.app_node_pool_name}"
   resource_group_name = var.node_resource_group
   #kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
