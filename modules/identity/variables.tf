@@ -29,6 +29,12 @@ variable "keyvault_id" {
   type        = string
 }
 
+variable "serviceaccount_namespace" {
+  description = "Namespace of the service account to grant access to the Key Vault."
+  type        = string
+  default     = "default"
+}
+
 # Tags
 variable "tags" {
   description = "Tags to apply to the resources"
