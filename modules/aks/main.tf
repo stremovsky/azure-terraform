@@ -1,11 +1,10 @@
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                = var.cluster_name
-  tags                = var.tags
-  location            = var.location
-  dns_prefix          = var.dns_prefix
-  resource_group_name = var.resource_group_name
-  node_resource_group = var.node_resource_group
-  #private_dns_zone_id     = var.private_dns_zone_id
+  name                    = var.cluster_name
+  tags                    = var.tags
+  location                = var.location
+  dns_prefix              = var.dns_prefix
+  resource_group_name     = var.resource_group_name
+  node_resource_group     = var.node_resource_group
   private_cluster_enabled = var.aks_private
 
   default_node_pool {
@@ -63,18 +62,16 @@ resource "azurerm_kubernetes_cluster" "aks" {
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
-  count               = var.app_node_pool_enable ? 1 : 0
-  name                = var.app_node_pool_name
-  tags                = var.tags
-  enable_auto_scaling = true
-  vm_size             = var.app_vm_size
-  os_disk_size_gb     = var.app_disk_size
-  os_disk_type        = var.app_disk_type
-  os_type             = var.app_os_type
-  max_count           = var.app_max_count
-  min_count           = var.app_min_count
-  # do not enforce node count to kill existing nodes in cluster
-  #node_count            = var.app_node_count
+  count                 = var.app_node_pool_enable ? 1 : 0
+  name                  = var.app_node_pool_name
+  tags                  = var.tags
+  enable_auto_scaling   = true
+  vm_size               = var.app_vm_size
+  os_disk_size_gb       = var.app_disk_size
+  os_disk_type          = var.app_disk_type
+  os_type               = var.app_os_type
+  max_count             = var.app_max_count
+  min_count             = var.app_min_count
   vnet_subnet_id        = var.vnet_subnet_id
   enable_node_public_ip = var.enable_node_public_ip
   node_labels           = var.app_node_pool_labels
@@ -82,33 +79,25 @@ resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "windows_gpu_node_pool" {
-  count               = var.gpu_node_pool_enable ? 1 : 0
-  name                = var.gpu_node_pool_name
-  tags                = var.tags
-  enable_auto_scaling = true
-  vm_size             = var.gpu_vm_size
-  os_disk_size_gb     = var.gpu_disk_size
-  os_disk_type        = var.gpu_disk_type
-  os_type             = var.gpu_os_type
-  max_count           = var.gpu_max_count
-  min_count           = var.gpu_min_count
-  # do not enforce node count to kill existing nodes in cluster
-  #node_count            = var.app_node_count
+  count                 = var.gpu_node_pool_enable ? 1 : 0
+  name                  = var.gpu_node_pool_name
+  tags                  = var.tags
+  enable_auto_scaling   = true
+  vm_size               = var.gpu_vm_size
+  os_disk_size_gb       = var.gpu_disk_size
+  os_disk_type          = var.gpu_disk_type
+  os_type               = var.gpu_os_type
+  max_count             = var.gpu_max_count
+  min_count             = var.gpu_min_count
   vnet_subnet_id        = var.vnet_subnet_id
   enable_node_public_ip = var.enable_node_public_ip
   node_labels           = var.gpu_node_pool_labels
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
-  #node_taints           = [
-  #      "sku=gpu:NoSchedule",
-  #]
 }
 
 // Grant read access to the AKS subnet
 resource "azurerm_role_assignment" "network_contributor" {
-  #principal_id         = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
-  #role_definition_name = "Network Contributor"
-  #role_definition_name = "Reader"
-  role_definition_name = "Owner"
+  role_definition_name = "Owner" # Role can be: Reader, Network Contributor
   principal_id         = azurerm_kubernetes_cluster.aks.identity[0].principal_id
   scope                = var.vnet_subnet_id
 }
@@ -117,8 +106,6 @@ data "azurerm_virtual_machine_scale_set" "windows_app_vmss" {
   depends_on          = [azurerm_kubernetes_cluster_node_pool.windows_node_pool]
   name                = "aks${var.app_node_pool_name}"
   resource_group_name = var.node_resource_group
-  #kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
-  #kubernetes_cluster_name = azurerm_kubernetes_cluster.aks.name
 }
 
 # resource "azurerm_managed_disk" "disk_d" {

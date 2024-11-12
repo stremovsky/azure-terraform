@@ -9,11 +9,6 @@ resource "azurerm_container_registry" "acr" {
   tags                = var.tags
 }
 
-#data "azurerm_container_registry" "registry" {
-#  name                = var.registry_name
-#  resource_group_name = var.resource_group_name
-#}
-
 # Load existing container registry
 data "azurerm_resources" "registry" {
   resource_group_name = var.resource_group_name
