@@ -33,19 +33,11 @@ resource "time_sleep" "wait_for_rbac" {
   depends_on      = [azurerm_role_assignment.rbac]
 }
 
-# Create a secret in the Azure Key Vault
+# Create a sample secret in the Azure Key Vault
 #resource "azurerm_key_vault_secret" "test-secret" {
 #  depends_on   = [time_sleep.wait_for_rbac]
 #  name         = "test"
 #  value        = "mysecretvalue"
-#  key_vault_id = azurerm_key_vault.kv.id
-#}
-
-# Create a secret in the Azure Key Vault
-#resource "azurerm_key_vault_secret" "secret2" {
-#  depends_on   = [time_sleep.wait_for_rbac]
-#  name         = "download-secret2"
-#  value        = "mysecretvalue42"
 #  key_vault_id = azurerm_key_vault.kv.id
 #}
 
