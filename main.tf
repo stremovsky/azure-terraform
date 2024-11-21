@@ -103,14 +103,15 @@ module "aks_cluster" {
   aks_private = var.aks_private
   #private_dns_zone_id = module.kv_private_dns_zone.private_dns_zone_id
 
-  app_node_pool_name   = local.app_node_pool_name
-  gpu_node_pool_name   = local.gpu_node_pool_name
-  app_node_pool_enable = var.app_node_pool_enable
-  gpu_node_pool_enable = var.gpu_node_pool_enable
-  app_node_pool_labels = var.app_node_pool_labels
-  gpu_node_pool_labels = var.gpu_node_pool_labels
-  app_disk_type        = var.app_disk_type
-  app_disk_size        = var.app_disk_size
+  app_node_pool_name         = local.app_node_pool_name
+  gpu_node_pool_name         = local.gpu_node_pool_name
+  app_node_pool_enable       = var.app_node_pool_enable
+  gpu_node_pool_enable       = var.gpu_node_pool_enable
+  linux_gpu_node_pool_enable = var.linux_gpu_node_pool_enable
+  app_node_pool_labels       = var.app_node_pool_labels
+  gpu_node_pool_labels       = var.gpu_node_pool_labels
+  app_disk_type              = var.app_disk_type
+  app_disk_size              = var.app_disk_size
 
   location              = data.azurerm_resource_group.aks_rg.location
   enable_node_public_ip = var.enable_node_public_ip
@@ -186,7 +187,6 @@ module "keyvault" {
   stack                = "stack1"
   extra_tags           = var.default_tags
   default_tags_enabled = false
-
 
   rbac_authorization_enabled = true
   logs_destinations_ids      = []
@@ -298,6 +298,14 @@ resource "azurerm_public_ip" "lb_public_ip" {
   sku                 = "Standard"
 }
 
+# Add a management lock for the public IP to prevent accidental deletion or updates
+resource "azurerm_management_lock" "lb_public_ip_lock" {
+  name       = "${azurerm_public_ip.lb_public_ip.name}-lock"
+  scope      = azurerm_public_ip.lb_public_ip.id
+  lock_level = "CanNotDelete" # Other option is "ReadOnly"
+  notes      = "This lock prevents accidental deletion of the public IP."
+}
+
 # Create Bastion host - not used
 module "bastion" {
   count               = var.enable_bastion ? 1 : 0
@@ -324,4 +332,18 @@ module "nsg" {
   location = data.azurerm_resource_group.aks_rg.location
   # Networking
   aks_subnet_id = module.vnet.aks_subnet_id
+}
+
+module "custom" {
+  source                          = "./modules/custom"
+  count                           = var.ep_enabled ? 1 : 0
+  project_short_name              = "ep"
+  whitelabel                      = var.whitelabel
+  aks_subnet_id                   = module.vnet.aks_subnet_id
+  whitelabel_short                = var.whitelabel_short
+  environment_name                = var.environment_name
+  region_name                     = var.region_name
+  vnet_resource_group_name        = var.vnet_resource_group_name
+  oidc_issuer_url                 = var.aks_enabled ? module.aks_cluster[0].oidc_issuer_url : "null"
+  aks_cluster_resource_group_name = var.aks_cluster_resource_group_name
 }

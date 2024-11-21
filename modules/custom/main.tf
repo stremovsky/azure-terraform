@@ -1,6 +1,6 @@
 locals {
-  key_vault_name         = "k-kv-${var.whitelabel_short}-${var.environment_name}-${var.project_short_name}-${var.region_name}"
-  workload_identity_name = "k-id-${var.whitelabel_short}-${var.environment_name}-${var.project_short_name}-${var.region_name}"
+  key_vault_name         = "k-kv-${var.project_short_name}-${var.environment_name}-${var.region_name}"
+  workload_identity_name = "k-id-${var.project_short_name}-${var.environment_name}-${var.region_name}"
 }
 
 data "azurerm_client_config" "current" {}
@@ -20,7 +20,7 @@ module "keyvault" {
   location             = data.azurerm_resource_group.aks_rg.location
   location_short       = data.azurerm_resource_group.aks_rg.location
   resource_group_name  = data.azurerm_resource_group.aks_rg.name
-  stack                = "stack1"
+  stack                = "cust1"
   extra_tags           = var.default_tags
   default_tags_enabled = false
 
@@ -60,7 +60,7 @@ module "keyvault_private_endpoint" {
   location_short       = data.azurerm_resource_group.aks_rg.location
   client_name          = var.whitelabel
   environment          = var.environment_name
-  stack                = "stack1"
+  stack                = "cust1"
   extra_tags           = var.default_tags
   default_tags_enabled = false
 
@@ -85,11 +85,12 @@ resource "azurerm_private_dns_a_record" "keyvault_dns_record" {
 }
 
 module "identity" {
-  source                 = "../../modules/identity"
-  tags                   = var.default_tags
-  location               = data.azurerm_resource_group.aks_rg.location
-  keyvault_id            = module.keyvault.key_vault_id
-  resource_group_name    = data.azurerm_resource_group.aks_rg.name
-  oidc_issuer_url        = var.oidc_issuer_url
-  workload_identity_name = local.workload_identity_name
+  source                   = "../../modules/identity"
+  tags                     = var.default_tags
+  location                 = data.azurerm_resource_group.aks_rg.location
+  keyvault_id              = module.keyvault.key_vault_id
+  resource_group_name      = data.azurerm_resource_group.aks_rg.name
+  oidc_issuer_url          = var.oidc_issuer_url
+  workload_identity_name   = local.workload_identity_name
+  serviceaccount_namespace = var.project_short_name
 }

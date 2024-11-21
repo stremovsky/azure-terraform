@@ -95,6 +95,23 @@ resource "azurerm_kubernetes_cluster_node_pool" "windows_gpu_node_pool" {
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
 }
 
+resource "azurerm_kubernetes_cluster_node_pool" "linux_gpu_node_pool" {
+  count                 = var.linux_gpu_node_pool_enable ? 1 : 0
+  name                  = "lingpu"
+  tags                  = var.tags
+  enable_auto_scaling   = true
+  vm_size               = var.gpu_vm_size
+  os_disk_size_gb       = var.gpu_disk_size
+  os_disk_type          = var.gpu_disk_type
+  os_type               = "Linux"
+  max_count             = var.gpu_max_count
+  min_count             = var.gpu_min_count
+  vnet_subnet_id        = var.vnet_subnet_id
+  enable_node_public_ip = var.enable_node_public_ip
+  node_labels           = var.gpu_node_pool_labels
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
+}
+
 // Grant read access to the AKS subnet
 resource "azurerm_role_assignment" "network_contributor" {
   role_definition_name = "Owner" # Role can be: Reader, Network Contributor

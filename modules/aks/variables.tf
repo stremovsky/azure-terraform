@@ -155,6 +155,13 @@ variable "app_node_pool_labels" {
 }
 
 # GPU nodepool configuration
+variable "linux_gpu_node_pool_enable" {
+  description = "Enable linux GPU node pool"
+  type        = bool
+  default     = false
+}
+
+# GPU nodepool configuration
 variable "gpu_node_pool_enable" {
   description = "Enable GPU node pool"
   type        = bool
