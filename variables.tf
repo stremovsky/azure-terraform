@@ -151,6 +151,11 @@ variable "app_node_pool_enable" {
   default = false
 }
 
+variable "linux_gpu_node_pool_enable" {
+  type    = bool
+  default = false
+}
+
 variable "gpu_node_pool_enable" {
   type    = bool
   default = false

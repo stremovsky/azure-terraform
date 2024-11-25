@@ -1,3 +1,15 @@
+output "ep_keyvault_name" {
+  value = var.ep_enabled ? module.custom[0].key_vault_name : "null"
+}
+
+output "ep_workload_identity_name" {
+  value = var.ep_enabled ? module.custom[0].workload_identity_name : "null"
+}
+
+output "ep_workload_identity_client_id" {
+  value = var.ep_enabled ? module.custom[0].workload_identity_client_id : "null"
+}
+
 output "cluster_name" {
   value = var.aks_enabled ? module.aks_cluster[0].cluster_name : "null"
 }
@@ -20,8 +32,8 @@ output "tenant_id" {
   value = data.azurerm_client_config.current.tenant_id
 }
 
-output "workload_webapp_identity_client_id" {
-  value = module.identity.workload_webapp_identity_client_id
+output "workload_identity_client_id" {
+  value = module.identity.workload_identity_client_id
 }
 
 output "workload_identity_name" {
