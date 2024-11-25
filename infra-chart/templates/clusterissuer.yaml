@@ -1,3 +1,4 @@
+{{- if .Values.clusterIssuer.create -}}
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
@@ -5,7 +6,6 @@ metadata:
     helm.sh/hook: "post-install"
     helm.sh/hook-weight: "5"
   name: cert-issuer
-  #namespace: "default"
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
@@ -16,3 +16,4 @@ spec:
     - http01:
         ingress:
           class: nginx
+{{- end }}

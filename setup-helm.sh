@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORKLOAD_CLIENT_ID=$(terraform output -raw workload_webapp_identity_client_id)
+WORKLOAD_CLIENT_ID=$(terraform output -raw workload_identity_client_id)
 if [[ -z "$WORKLOAD_CLIENT_ID" ]]; then
     echo "Failed to get WORKLOAD_CLIENT_ID from terraform output"
     exit
