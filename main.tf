@@ -109,6 +109,7 @@ module "aks_cluster" {
   system_vm_size        = var.system_vm_size
   vnet_subnet_id        = module.vnet.aks_subnet_id
   tags                  = var.default_tags
+  kubernetes_version    = var.kubernetes_version
   #  "172.16.16.0/24"
   service_cidr = var.aks_services_subnet_cidr
   # "172.16.16.10"
@@ -324,6 +325,7 @@ module "nsg" {
 }
 
 module "custom" {
+  depends_on                      = [module.identity.workload_identity_client_id]
   source                          = "./modules/custom"
   count                           = var.ep_enabled ? 1 : 0
   project_short_name              = "ep"
@@ -335,4 +337,25 @@ module "custom" {
   vnet_resource_group_name        = var.vnet_resource_group_name
   oidc_issuer_url                 = var.aks_enabled ? module.aks_cluster[0].oidc_issuer_url : "null"
   aks_cluster_resource_group_name = var.aks_cluster_resource_group_name
+}
+
+resource "null_resource" "setup_infra" {
+  depends_on = [module.custom.workload_identity_client_id, module.identity.workload_identity_client_id]
+  triggers = {
+    always_run = timestamp()
+  }
+  provisioner "local-exec" {
+    command = "./setup-infra.sh && ./setup-base.sh"
+  }
+}
+
+resource "null_resource" "setup_ep" {
+  depends_on = [null_resource.setup_infra]
+  count      = var.ep_enabled ? 1 : 0
+  triggers = {
+    always_run = timestamp()
+  }
+  provisioner "local-exec" {
+    command = "./setup-ep.sh"
+  }
 }

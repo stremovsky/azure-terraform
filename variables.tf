@@ -145,6 +145,11 @@ variable "create_registry" {
   default = false
 }
 
+variable "kubernetes_version" {
+  type    = string
+  default = "1.29"
+}
+
 variable "aks_node_groups" {
   description = "List of node groups with their settings"
   type = list(object({

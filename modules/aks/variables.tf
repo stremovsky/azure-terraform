@@ -176,3 +176,8 @@ variable "tags" {
 variable "identity" {
   type = map(string)
 }
+
+variable "kubernetes_version" {
+  type    = string
+  default = "1.29"
+}

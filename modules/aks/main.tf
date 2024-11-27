@@ -6,6 +6,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   resource_group_name     = var.resource_group_name
   node_resource_group     = var.node_resource_group
   private_cluster_enabled = var.aks_private
+  kubernetes_version      = var.kubernetes_version
 
   default_node_pool {
     name      = var.system_node_pool_name
@@ -21,6 +22,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     os_sku                      = var.system_os_sku
     os_disk_type                = var.system_disk_type
     os_disk_size_gb             = var.system_disk_size
+    orchestrator_version        = var.kubernetes_version
   }
 
   network_profile {
