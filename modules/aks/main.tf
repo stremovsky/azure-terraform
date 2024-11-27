@@ -61,54 +61,23 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 }
 
-resource "azurerm_kubernetes_cluster_node_pool" "windows_node_pool" {
-  count                 = var.app_node_pool_enable ? 1 : 0
-  name                  = var.app_node_pool_name
-  tags                  = var.tags
-  enable_auto_scaling   = true
-  vm_size               = var.app_vm_size
-  os_disk_size_gb       = var.app_disk_size
-  os_disk_type          = var.app_disk_type
-  os_type               = var.app_os_type
-  max_count             = var.app_max_count
-  min_count             = var.app_min_count
-  vnet_subnet_id        = var.vnet_subnet_id
-  enable_node_public_ip = var.enable_node_public_ip
-  node_labels           = var.app_node_pool_labels
-  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
-}
+resource "azurerm_kubernetes_cluster_node_pool" "node_pools" {
+  for_each = { for idx, group in var.node_groups : group.name => group }
 
-resource "azurerm_kubernetes_cluster_node_pool" "windows_gpu_node_pool" {
-  count                 = var.gpu_node_pool_enable ? 1 : 0
-  name                  = var.gpu_node_pool_name
+  name                  = each.value.name
   tags                  = var.tags
   enable_auto_scaling   = true
-  vm_size               = var.gpu_vm_size
-  os_disk_size_gb       = var.gpu_disk_size
-  os_disk_type          = var.gpu_disk_type
-  os_type               = var.gpu_os_type
-  max_count             = var.gpu_max_count
-  min_count             = var.gpu_min_count
+  vm_size               = each.value.vm_size
+  os_disk_size_gb       = each.value.disk_size
+  os_disk_type          = each.value.disk_type
+  os_sku                = each.value.os_sku
+  os_type               = each.value.os_type
+  max_count             = each.value.max_nodes
+  min_count             = each.value.min_nodes
+  node_labels           = each.value.node_labels
+  orchestrator_version  = each.value.orchestrator_version
   vnet_subnet_id        = var.vnet_subnet_id
   enable_node_public_ip = var.enable_node_public_ip
-  node_labels           = var.gpu_node_pool_labels
-  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
-}
-
-resource "azurerm_kubernetes_cluster_node_pool" "linux_gpu_node_pool" {
-  count                 = var.linux_gpu_node_pool_enable ? 1 : 0
-  name                  = "lingpu"
-  tags                  = var.tags
-  enable_auto_scaling   = true
-  vm_size               = var.gpu_vm_size
-  os_disk_size_gb       = var.gpu_disk_size
-  os_disk_type          = var.gpu_disk_type
-  os_type               = "Linux"
-  max_count             = var.gpu_max_count
-  min_count             = var.gpu_min_count
-  vnet_subnet_id        = var.vnet_subnet_id
-  enable_node_public_ip = var.enable_node_public_ip
-  node_labels           = var.gpu_node_pool_labels
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
 }
 
@@ -119,11 +88,11 @@ resource "azurerm_role_assignment" "network_contributor" {
   scope                = var.vnet_subnet_id
 }
 
-data "azurerm_virtual_machine_scale_set" "windows_app_vmss" {
-  depends_on          = [azurerm_kubernetes_cluster_node_pool.windows_node_pool]
-  name                = "aks${var.app_node_pool_name}"
-  resource_group_name = var.node_resource_group
-}
+# data "azurerm_virtual_machine_scale_set" "windows_app_vmss" {
+#   depends_on          = [azurerm_kubernetes_cluster_node_pool.windows_node_pool]
+#   name                = "aks${var.app_node_pool_name}"
+#   resource_group_name = var.node_resource_group
+# }
 
 # resource "azurerm_managed_disk" "disk_d" {
 #   name                 = "disk-d-2tb"

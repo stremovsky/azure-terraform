@@ -99,25 +99,13 @@ module "aks_cluster" {
   #node_resource_group    = data.azurerm_resource_group.node_rg.name
   node_resource_group   = "MC_${var.aks_cluster_resource_group_name}"
   system_node_pool_name = local.system_node_pool_name
-
-  aks_private = var.aks_private
+  aks_private           = var.aks_private
   #private_dns_zone_id = module.kv_private_dns_zone.private_dns_zone_id
-
-  app_node_pool_name         = local.app_node_pool_name
-  gpu_node_pool_name         = local.gpu_node_pool_name
-  app_node_pool_enable       = var.app_node_pool_enable
-  gpu_node_pool_enable       = var.gpu_node_pool_enable
-  linux_gpu_node_pool_enable = var.linux_gpu_node_pool_enable
-  app_node_pool_labels       = var.app_node_pool_labels
-  gpu_node_pool_labels       = var.gpu_node_pool_labels
-  app_disk_type              = var.app_disk_type
-  app_disk_size              = var.app_disk_size
 
   location              = data.azurerm_resource_group.aks_rg.location
   enable_node_public_ip = var.enable_node_public_ip
   cluster_name          = local.cluster_name
   dns_prefix            = "aks${var.environment_name}"
-  app_vm_size           = var.app_vm_size
   system_vm_size        = var.system_vm_size
   vnet_subnet_id        = module.vnet.aks_subnet_id
   tags                  = var.default_tags
@@ -135,6 +123,7 @@ module "aks_cluster" {
     # Reference the UAMI
     #identity_id = azurerm_user_assigned_identity.aks_identity.id
   }
+  node_groups = var.aks_node_groups
 }
 
 module "registry" {

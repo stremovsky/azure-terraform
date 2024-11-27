@@ -96,12 +96,6 @@ variable "dns_prefix" {
   default     = "akstesting"
 }
 
-variable "node_count" {
-  description = "Number of nodes in the default node pool"
-  type        = number
-  default     = 1
-}
-
 variable "min_count" {
   description = "Minimal number of nodes in the default node pool"
   type        = number
@@ -112,24 +106,6 @@ variable "max_count" {
   description = "Maximal number of nodes in the default node pool"
   type        = number
   default     = 10
-}
-
-variable "app_vm_size" {
-  description = "VM size for windows nodes in winpool node pool"
-  type        = string
-  default     = "Standard_D4_v5"
-}
-
-variable "app_disk_type" {
-  description = "Disk type for the system node pool (e.g., Managed, Unmanaged)"
-  type        = string
-  default     = "Managed"
-}
-
-variable "app_disk_size" {
-  description = "Disk size (in GB) for the application node pool"
-  type        = number
-  default     = 300
 }
 
 variable "system_vm_size" {
@@ -144,31 +120,6 @@ variable "default_tags" {
   default = {
     environment = "Development"
   }
-}
-
-variable "app_node_pool_enable" {
-  type    = bool
-  default = false
-}
-
-variable "linux_gpu_node_pool_enable" {
-  type    = bool
-  default = false
-}
-
-variable "gpu_node_pool_enable" {
-  type    = bool
-  default = false
-}
-
-variable "app_node_pool_labels" {
-  type    = map(string)
-  default = {}
-}
-
-variable "gpu_node_pool_labels" {
-  type    = map(string)
-  default = {}
 }
 
 variable "environment_name" {
@@ -192,6 +143,24 @@ variable "aks_dns_server_ip" {}
 variable "create_registry" {
   type    = bool
   default = false
+}
+
+variable "aks_node_groups" {
+  description = "List of node groups with their settings"
+  type = list(object({
+    name                 = string
+    os_sku               = string
+    os_type              = string
+    vm_size              = string
+    min_nodes            = number
+    max_nodes            = number
+    disk_size            = number
+    disk_type            = string
+    node_labels          = map(string),
+    orchestrator_version = string
+  }))
+  //type = list
+  default = []
 }
 
 variable "ep_enabled" {
