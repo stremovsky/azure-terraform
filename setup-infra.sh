@@ -28,7 +28,7 @@ cd ..
 echo "Sync kubernetes configuration"
 echo "Cluster name: $CLUSTER_NAME"
 
-az aks get-credentials --resource-group $RESOURCE_GROUP_NAME --name $CLUSTER_NAME
+az aks get-credentials --resource-group $RESOURCE_GROUP_NAME --name $CLUSTER_NAME --overwrite-existing
 kubectl config set-context $CLUSTER_NAME
 
 #kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.3/cert-manager.crds.yaml

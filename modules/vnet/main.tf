@@ -20,6 +20,13 @@ resource "azurerm_subnet" "aks_subnet" {
   resource_group_name  = var.resource_group_name
   virtual_network_name = data.azurerm_virtual_network.vnet.name
   address_prefixes     = [var.aks_subnet_cidr]
+
+  # Service endpoints
+  service_endpoints = [
+    "Microsoft.Storage",
+    "Microsoft.ContainerRegistry",
+    "Microsoft.KeyVault"
+  ]
 }
 
 # Load subnet resource

@@ -28,10 +28,10 @@ resource "azurerm_role_assignment" "rbac" {
 }
 
 # Wait for RBAC propagation
-resource "time_sleep" "wait_for_rbac" {
-  create_duration = "30s"
-  depends_on      = [azurerm_role_assignment.rbac]
-}
+# resource "time_sleep" "wait_for_rbac" {
+#   create_duration = "30s"
+#   depends_on      = [azurerm_role_assignment.rbac]
+# }
 
 # Create a sample secret in the Azure Key Vault
 #resource "azurerm_key_vault_secret" "test-secret" {

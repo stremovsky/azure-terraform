@@ -41,7 +41,7 @@ variable "create_vnet" {
 }
 
 variable "create_subnet" {
-  description = "Enable/disable subnet creation"
+  description = "Enable/disable AKS subnet creation"
   type        = bool
   default     = false
 }
@@ -87,7 +87,7 @@ variable "registry_resource_group_name" {
 variable "location" {
   description = "Azure region to deploy resources"
   type        = string
-  default     = "westus"
+  default     = "eastus"
 }
 
 variable "dns_prefix" {

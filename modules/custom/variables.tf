@@ -1,3 +1,14 @@
+variable "resource_group_name" {
+  description = "Name of the resource group where the resources will be deployed."
+  type        = string
+}
+
+variable "location" {
+  description = "Azure region to deploy the resources."
+  type        = string
+}
+
+
 variable "project_short_name" {
   type = string
 }
@@ -15,10 +26,6 @@ variable "environment_name" {
 }
 
 variable "region_name" {
-  type = string
-}
-
-variable "aks_cluster_resource_group_name" {
   type = string
 }
 

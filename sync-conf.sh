@@ -14,5 +14,5 @@ fi
 
 echo "Sync kubernetes configuration"
 echo "Cluster name: $CLUSTER_NAME"
-az aks get-credentials --resource-group $RESOURCE_GROUP_NAME --name $CLUSTER_NAME
+az aks get-credentials --resource-group $RESOURCE_GROUP_NAME --name $CLUSTER_NAME --overwrite-existing
 kubectl config set-context $CLUSTER_NAME

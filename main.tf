@@ -28,7 +28,7 @@ data "azurerm_subscription" "current" {
 data "azurerm_client_config" "current" {}
 
 # Create Azure Resource Group id create_aks_resource_group variable is true
-resource "azurerm_resource_group" "aks_rg" {
+resource "azurerm_resource_group" "aks_rg0" {
   count    = var.create_aks_resource_group ? 1 : 0
   name     = var.aks_cluster_resource_group_name
   location = var.location
@@ -36,7 +36,7 @@ resource "azurerm_resource_group" "aks_rg" {
 
 # Load Azure Resource Group
 data "azurerm_resource_group" "aks_rg" {
-  name = var.create_aks_resource_group ? azurerm_resource_group.aks_rg[0].name : var.aks_cluster_resource_group_name
+  name = var.create_aks_resource_group ? azurerm_resource_group.aks_rg0[0].name : var.aks_cluster_resource_group_name
 }
 
 module "vnet" {
@@ -166,7 +166,7 @@ module "keyvault" {
 
 module "keyvault" {
   source  = "claranet/keyvault/azurerm"
-  version = "7.5.0"
+  version = "7.7.0"
 
   custom_name          = local.key_vault_name
   client_name          = var.whitelabel
@@ -234,7 +234,7 @@ module "kv_private_dns_zone" {
 # Create Private Endpoint for Key Vault
 module "keyvault_private_endpoint" {
   source  = "claranet/private-endpoint/azurerm"
-  version = "7.0.3"
+  version = "7.1.1"
 
   location             = data.azurerm_resource_group.aks_rg.location
   location_short       = data.azurerm_resource_group.aks_rg.location
@@ -311,38 +311,61 @@ module "bastion" {
 
 # Allow SSH, ICMP - not used
 module "nsg" {
-  count               = var.enable_nsg ? 1 : 0
-  source              = "./modules/nsg"
-  resourse_name       = local.nsg_resourse_name
-  tags                = var.default_tags
-  resource_group_name = data.azurerm_resource_group.aks_rg.name
-  #resource_group_name = module.aks_cluster[0].node_resource_group
+  count                        = var.enable_nsg ? 1 : 0
+  source                       = "./modules/nsg"
+  resourse_name                = local.nsg_resourse_name
+  tags                         = var.default_tags
+  resource_group_name          = data.azurerm_resource_group.aks_rg.name
   aks_node_resource_group_name = module.aks_cluster[0].node_resource_group
-  #aks_resource_group_name = data.azurerm_resource_group.node_rg.name
-  location = data.azurerm_resource_group.aks_rg.location
-  # Networking
-  aks_subnet_id = module.vnet.aks_subnet_id
+  location                     = data.azurerm_resource_group.aks_rg.location
+  aks_subnet_id                = module.vnet.aks_subnet_id
 }
 
+# Wait for RBAC propagation
+# resource "time_sleep" "wait_60s" {
+#   create_duration = "60s"
+#   depends_on = [
+#     module.identity.workload_identity_client_id,
+#     module.aks_cluster[0].aks_version,
+#     data.azurerm_resources.dns
+#   ]
+# }
+
 module "custom" {
-  depends_on                      = [module.identity.workload_identity_client_id]
-  source                          = "./modules/custom"
-  count                           = var.ep_enabled ? 1 : 0
-  project_short_name              = "ep"
-  whitelabel                      = var.whitelabel
-  aks_subnet_id                   = module.vnet.aks_subnet_id
-  whitelabel_short                = var.whitelabel_short
-  environment_name                = var.environment_name
-  region_name                     = var.region_name
-  vnet_resource_group_name        = var.vnet_resource_group_name
-  oidc_issuer_url                 = var.aks_enabled ? module.aks_cluster[0].oidc_issuer_url : "null"
-  aks_cluster_resource_group_name = var.aks_cluster_resource_group_name
+  source                   = "./modules/custom"
+  count                    = var.ep_enabled ? 1 : 0
+  project_short_name       = "ep"
+  whitelabel               = var.whitelabel
+  aks_subnet_id            = module.vnet.aks_subnet_id
+  whitelabel_short         = var.whitelabel_short
+  environment_name         = var.environment_name
+  region_name              = var.region_name
+  location                 = data.azurerm_resource_group.aks_rg.location
+  resource_group_name      = data.azurerm_resource_group.aks_rg.name
+  vnet_resource_group_name = var.vnet_resource_group_name
+  oidc_issuer_url          = var.aks_enabled ? module.aks_cluster[0].oidc_issuer_url : "null"
 }
 
 resource "null_resource" "setup_infra" {
-  depends_on = [module.custom.workload_identity_client_id, module.identity.workload_identity_client_id]
+  depends_on = [
+    module.aks_cluster[0].aks_version,
+    module.custom.workload_identity_client_id,
+    module.identity.workload_identity_client_id
+  ]
   triggers = {
-    always_run = timestamp()
+    //always_run = timestamp()
+    infrastructure_hash = sha256(join("", [
+      var.ep_enabled ? module.custom[0].workload_identity_client_id : "null",
+      var.aks_enabled ? module.aks_cluster[0].oidc_issuer_url : "null",
+      data.azurerm_client_config.current.tenant_id,
+      data.azurerm_client_config.current.object_id,
+      data.azurerm_resources.dns.resources.0.id,
+      module.identity.workload_identity_client_id,
+      module.aks_cluster[0].aks_version,
+      module.aks_cluster[0].aks_host,
+      module.keyvault.key_vault_uri,
+      module.keyvault.key_vault_id
+    ]))
   }
   provisioner "local-exec" {
     command = "./setup-infra.sh && ./setup-base.sh"
@@ -353,7 +376,19 @@ resource "null_resource" "setup_ep" {
   depends_on = [null_resource.setup_infra]
   count      = var.ep_enabled ? 1 : 0
   triggers = {
-    always_run = timestamp()
+    //always_run = timestamp()
+    infrastructure_hash = sha256(join("", [
+      var.ep_enabled ? module.custom[0].workload_identity_client_id : "null",
+      var.aks_enabled ? module.aks_cluster[0].oidc_issuer_url : "null",
+      data.azurerm_client_config.current.tenant_id,
+      data.azurerm_client_config.current.object_id,
+      data.azurerm_resources.dns.resources.0.id,
+      module.identity.workload_identity_client_id,
+      module.aks_cluster[0].aks_version,
+      module.aks_cluster[0].aks_host,
+      module.keyvault.key_vault_uri,
+      module.keyvault.key_vault_id
+    ]))
   }
   provisioner "local-exec" {
     command = "./setup-ep.sh"
