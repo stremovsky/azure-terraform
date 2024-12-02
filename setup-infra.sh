@@ -33,15 +33,19 @@ kubectl config set-context $CLUSTER_NAME
 
 #kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.3/cert-manager.crds.yaml
 
+#https://cloud-provider-azure.sigs.k8s.io/topics/loadbalancer/
+
 if helm status infra --namespace infra &> /dev/null; then
     echo "Helm release 'infra' is already installed."
     helm upgrade infra ./infra-chart \
         --namespace infra --create-namespace \
-        --set ingress-nginx.controller.service.loadBalancerIP=$LB_PUBLIC_IP
+        --set ingress-nginx.controller.service.loadBalancerIP=$LB_PUBLIC_IP \
+        --set ingress-nginx.controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"=$RESOURCE_GROUP_NAME
 else
     helm install infra ./infra-chart \
         --namespace infra --create-namespace \
-        --set ingress-nginx.controller.service.loadBalancerIP=$LB_PUBLIC_IP
+        --set ingress-nginx.controller.service.loadBalancerIP=$LB_PUBLIC_IP \
+        --set ingress-nginx.controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"=$RESOURCE_GROUP_NAME
 fi
 
 # helm delete infra --namespace infra
