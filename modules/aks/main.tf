@@ -84,11 +84,21 @@ resource "azurerm_kubernetes_cluster_node_pool" "node_pools" {
 }
 
 // Grant read access to the AKS subnet
-resource "azurerm_role_assignment" "network_contributor" {
+resource "azurerm_role_assignment" "subnet_network_contributor" {
   #role_definition_name = "Owner" # Role can be: Reader, Network Contributor
   role_definition_name = "Network Contributor"
   principal_id         = azurerm_kubernetes_cluster.aks.identity[0].principal_id
   scope                = var.vnet_subnet_id
+}
+
+data "azurerm_resource_group" "aks_rg" {
+  name = var.resource_group_name
+}
+
+resource "azurerm_role_assignment" "rg_network_contributor" {
+  role_definition_name = "Network Contributor"
+  principal_id         = azurerm_kubernetes_cluster.aks.identity[0].principal_id
+  scope                = data.azurerm_resource_group.aks_rg.id
 }
 
 # data "azurerm_virtual_machine_scale_set" "windows_app_vmss" {
