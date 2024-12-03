@@ -63,6 +63,48 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 }
 
+resource "azurerm_management_lock" "aks_lock" {
+  count      = var.lock_resources ? 1 : 0
+  name       = "${var.cluster_name}-lock"
+  scope      = azurerm_kubernetes_cluster.aks.id
+  lock_level = "CanNotDelete" # Other option is "ReadOnly"
+  notes      = "This lock prevents accidental deletion of AKS cluster"
+}
+
+resource "azurerm_management_lock" "default_node_pool_lock" {
+  name       = "${var.cluster_name}-def-lock"
+  scope      = "${azurerm_kubernetes_cluster.aks.id}/agentPools/default"
+  lock_level = "CanNotDelete"
+  notes      = "This lock prevents deletion of the default node pool"
+}
+
+//https://portal.azure.com/#@pictimeprod.onmicrosoft.com/resource/subscriptions/fdacd616-05ae-42d7-aa8b-ac3d67249b0a/resourceGroups/mc_k-playground-eus1/providers/Microsoft.Network/loadBalancers/kubernetes
+
+# Retrieve the default Load Balancer
+data "azurerm_resources" "aks_default_lb" {
+  type                = "Microsoft.Network/loadBalancers"
+  resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group
+  # Filter for the default Load Balancer
+  name = "kubernetes" # The default name for AKS Load Balancer
+}
+
+resource "azurerm_management_lock" "aks_lb_lock" {
+  name       = "${var.cluster_name}-lb-lock"
+  scope      = data.azurerm_resources.aks_default_lb.resources.0.id
+  lock_level = "CanNotDelete"
+  notes      = "This lock prevents deletion of the AKS default load balancer"
+}
+
+
+resource "azurerm_management_lock" "mc_resource_group_lock" {
+  count      = var.lock_resources ? 1 : 0
+  name       = "${var.cluster_name}-mc-lock"
+  scope      = azurerm_kubernetes_cluster.aks.node_resource_group_id
+  lock_level = "CanNotDelete" # Other option is "ReadOnly"
+  notes      = "This lock prevents accidental deletion of AKS mc recource group"
+}
+
+
 resource "azurerm_kubernetes_cluster_node_pool" "node_pools" {
   for_each = { for idx, group in var.node_groups : group.name => group }
 
@@ -81,6 +123,28 @@ resource "azurerm_kubernetes_cluster_node_pool" "node_pools" {
   vnet_subnet_id        = var.vnet_subnet_id
   enable_node_public_ip = var.enable_node_public_ip
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
+}
+
+data "azurerm_resources" "aks_nsg" {
+  resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group
+  type                = "Microsoft.Network/networkSecurityGroups"
+}
+
+resource "azurerm_management_lock" "aks_nsg_lock" {
+  count      = var.lock_resources ? 1 : 0
+  name       = "${var.cluster_name}-nsg-lock"
+  scope      = data.azurerm_resources.aks_nsg.resources.0.id
+  lock_level = "CanNotDelete" # Other option is "ReadOnly"
+  notes      = "This lock prevents accidental deletion of AKS ngs"
+}
+
+resource "azurerm_management_lock" "node_pool_lock" {
+  for_each = var.lock_resources ? azurerm_kubernetes_cluster_node_pool.node_pools : {}
+
+  name       = "${each.value.name}-lock"
+  scope      = each.value.id
+  lock_level = "CanNotDelete" # Other option is "ReadOnly"
+  notes      = "This lock prevents deletion of the node pool: ${each.value.name}"
 }
 
 // Grant read access to the AKS subnet

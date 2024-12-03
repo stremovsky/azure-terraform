@@ -301,10 +301,11 @@ resource "azurerm_public_ip" "lb_public_ip" {
 
 # Add a management lock for the public IP to prevent accidental deletion or updates
 resource "azurerm_management_lock" "lb_public_ip_lock" {
+  count      = var.lock_resources ? 1 : 0
   name       = "${azurerm_public_ip.lb_public_ip.name}-lock"
   scope      = azurerm_public_ip.lb_public_ip.id
   lock_level = "CanNotDelete" # Other option is "ReadOnly"
-  notes      = "This lock prevents accidental deletion of the public IP."
+  notes      = "This lock prevents accidental deletion of the public IP"
 }
 
 # Create Bastion host - not used
