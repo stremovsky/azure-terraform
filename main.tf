@@ -95,6 +95,7 @@ resource "azurerm_role_assignment" "network_contributor" {
 module "aks_cluster" {
   count               = var.aks_enabled ? 1 : 0
   source              = "./modules/aks"
+  resource_group_id   = data.azurerm_resource_group.aks_rg.id
   resource_group_name = data.azurerm_resource_group.aks_rg.name
   #node_resource_group    = data.azurerm_resource_group.node_rg.name
   node_resource_group   = "MC_${var.aks_cluster_resource_group_name}"
@@ -108,6 +109,7 @@ module "aks_cluster" {
   dns_prefix            = "aks${var.environment_name}"
   system_vm_size        = var.system_vm_size
   vnet_subnet_id        = module.vnet.aks_subnet_id
+  lock_resources        = var.lock_resources
   tags                  = var.default_tags
   kubernetes_version    = var.kubernetes_version
   #  "172.16.16.0/24"
@@ -204,6 +206,14 @@ module "keyvault" {
   }
 }
 
+resource "azurerm_management_lock" "keyvalt_lock" {
+  count      = var.lock_resources ? 1 : 0
+  name       = "${local.key_vault_name}-lock"
+  scope      = module.keyvault.key_vault_id
+  lock_level = "CanNotDelete" # Other option is "ReadOnly"
+  notes      = "This lock prevents accidental deletion of keyvault service"
+}
+
 data "azurerm_resources" "dns" {
   name                = "privatelink.vaultcore.azure.net"
   resource_group_name = length(var.vnet_resource_group_name) > 0 ? var.vnet_resource_group_name : data.azurerm_resource_group.aks_rg.name
@@ -275,6 +285,7 @@ module "identity" {
   tags                   = var.default_tags
   location               = data.azurerm_resource_group.aks_rg.location
   keyvault_id            = module.keyvault.key_vault_id
+  lock_resources         = var.lock_resources
   resource_group_name    = data.azurerm_resource_group.aks_rg.name
   oidc_issuer_url        = var.aks_enabled ? module.aks_cluster[0].oidc_issuer_url : null
   workload_identity_name = local.workload_identity_name
@@ -340,6 +351,7 @@ module "custom" {
   whitelabel_short         = var.whitelabel_short
   environment_name         = var.environment_name
   region_name              = var.region_name
+  lock_resources           = var.lock_resources
   location                 = data.azurerm_resource_group.aks_rg.location
   resource_group_name      = data.azurerm_resource_group.aks_rg.name
   vnet_resource_group_name = var.vnet_resource_group_name

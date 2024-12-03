@@ -4,6 +4,11 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "resource_group_id" {
+  description = "ID of the resource group"
+  type        = string
+}
+
 variable "node_resource_group" {
   description = "Name of the resource group for Kubernetes resources"
   type        = string
@@ -180,4 +185,9 @@ variable "identity" {
 variable "kubernetes_version" {
   type    = string
   default = "1.29"
+}
+
+variable "lock_resources" {
+  type    = bool
+  default = false
 }

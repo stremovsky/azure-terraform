@@ -48,3 +48,8 @@ variable "default_tags" {
 variable "aks_subnet_id" {
   type = string
 }
+
+variable "lock_resources" {
+  type    = bool
+  default = false
+}

@@ -41,3 +41,8 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "lock_resources" {
+  type    = bool
+  default = false
+}

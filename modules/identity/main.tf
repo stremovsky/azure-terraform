@@ -26,3 +26,11 @@ resource "azurerm_federated_identity_credential" "workload_federated_identity" {
   subject             = "system:serviceaccount:${var.serviceaccount_namespace}:${var.workload_identity_name}"
   issuer              = var.oidc_issuer_url
 }
+
+resource "azurerm_management_lock" "managed_identity_lock" {
+  count      = var.lock_resources ? 1 : 0
+  name       = "${var.workload_identity_name}-lock"
+  scope      = azurerm_user_assigned_identity.workload_webapp_identity.id
+  lock_level = "CanNotDelete" # Other option is "ReadOnly"
+  notes      = "This lock prevents accidental deletion of managed identity"
+}

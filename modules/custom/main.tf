@@ -51,6 +51,14 @@ module "keyvault" {
   }
 }
 
+resource "azurerm_management_lock" "keyvalt_lock" {
+  count      = var.lock_resources ? 1 : 0
+  name       = "${local.key_vault_name}-lock"
+  scope      = module.keyvault.key_vault_id
+  lock_level = "CanNotDelete" # Other option is "ReadOnly"
+  notes      = "This lock prevents accidental deletion of keyvault service"
+}
+
 data "azurerm_resources" "dns" {
   name                = "privatelink.vaultcore.azure.net"
   resource_group_name = length(var.vnet_resource_group_name) > 0 ? var.vnet_resource_group_name : var.resource_group_name
@@ -94,6 +102,7 @@ module "identity" {
   source                   = "../../modules/identity"
   tags                     = var.default_tags
   location                 = var.location
+  lock_resources           = var.lock_resources
   keyvault_id              = module.keyvault.key_vault_id
   resource_group_name      = var.resource_group_name
   oidc_issuer_url          = var.oidc_issuer_url

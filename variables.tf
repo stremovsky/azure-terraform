@@ -172,3 +172,8 @@ variable "ep_enabled" {
   type    = bool
   default = false
 }
+
+variable "lock_resources" {
+  type    = bool
+  default = false
+}
