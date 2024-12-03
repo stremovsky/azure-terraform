@@ -91,14 +91,10 @@ resource "azurerm_role_assignment" "subnet_network_contributor" {
   scope                = var.vnet_subnet_id
 }
 
-data "azurerm_resource_group" "aks_rg" {
-  name = var.resource_group_name
-}
-
 resource "azurerm_role_assignment" "rg_network_contributor" {
   role_definition_name = "Network Contributor"
   principal_id         = azurerm_kubernetes_cluster.aks.identity[0].principal_id
-  scope                = data.azurerm_resource_group.aks_rg.id
+  scope                = var.resource_group_id
 }
 
 # data "azurerm_virtual_machine_scale_set" "windows_app_vmss" {
