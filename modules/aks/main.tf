@@ -72,6 +72,7 @@ resource "azurerm_management_lock" "aks_lock" {
 }
 
 resource "azurerm_management_lock" "default_node_pool_lock" {
+  count      = var.lock_resources ? 1 : 0
   name       = "${var.cluster_name}-def-lock"
   scope      = "${azurerm_kubernetes_cluster.aks.id}/agentPools/default"
   lock_level = "CanNotDelete"
@@ -96,6 +97,7 @@ resource "azurerm_management_lock" "mc_resource_group_lock" {
 # }
 
 resource "azurerm_management_lock" "aks_lb_lock" {
+  count      = var.lock_resources ? 1 : 0
   name       = "${var.cluster_name}-lb-lock"
   #"/subscriptions/fdacd616-05ae-42d7-aa8b-ac3d67249b0a/resourceGroups/mc_k-playground-eus1/providers/Microsoft.Network/loadBalancers/kubernetes"
   scope      = "${azurerm_kubernetes_cluster.aks.node_resource_group_id}/providers/Microsoft.Network/loadBalancers/kubernetes"
@@ -126,6 +128,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "node_pools" {
 }
 
 data "azurerm_resources" "aks_nsg" {
+  count      = var.lock_resources ? 1 : 0
   resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group
   type                = "Microsoft.Network/networkSecurityGroups"
 }
@@ -134,7 +137,7 @@ resource "azurerm_management_lock" "aks_nsg_lock" {
   count      = var.lock_resources ? 1 : 0
   name       = "${var.cluster_name}-nsg-lock"
   #"/subscriptions/fdacd616-05ae-42d7-aa8b-ac3d67249b0a/resourceGroups/mc_k-playground-eus1/providers/Microsoft.Network/networkSecurityGroups/aks-agentpool-22949909-nsg"
-  scope      = data.azurerm_resources.aks_nsg.resources.0.id
+  scope      = data.azurerm_resources.aks_nsg[0].resources.0.id
   lock_level = "CanNotDelete" # Other option is "ReadOnly"
   notes      = "This lock prevents accidental deletion of AKS ngs"
 }
