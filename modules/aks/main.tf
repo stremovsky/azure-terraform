@@ -23,6 +23,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     os_disk_type                = var.system_disk_type
     os_disk_size_gb             = var.system_disk_size
     orchestrator_version        = var.kubernetes_version
+
+    upgrade_settings {
+      max_surge = "33%"
+    }
   }
 
   network_profile {
@@ -80,8 +84,8 @@ resource "azurerm_management_lock" "default_node_pool_lock" {
 }
 
 resource "azurerm_management_lock" "mc_resource_group_lock" {
-  count      = var.lock_resources ? 1 : 0
-  name       = "${var.cluster_name}-mc-lock"
+  count = var.lock_resources ? 1 : 0
+  name  = "${var.cluster_name}-mc-lock"
   #"/subscriptions/fdacd616-05ae-42d7-aa8b-ac3d67249b0a/resourceGroups/MC_k-playground-eus1"
   scope      = azurerm_kubernetes_cluster.aks.node_resource_group_id
   lock_level = "CanNotDelete" # Other option is "ReadOnly"
@@ -97,10 +101,10 @@ resource "azurerm_management_lock" "mc_resource_group_lock" {
 # }
 
 resource "azurerm_management_lock" "aks_lb_lock" {
-  count      = var.lock_resources ? 1 : 0
-  name       = "${var.cluster_name}-lb-lock"
+  count = var.lock_resources ? 1 : 0
+  name  = "${var.cluster_name}-lb-lock"
   #"/subscriptions/fdacd616-05ae-42d7-aa8b-ac3d67249b0a/resourceGroups/mc_k-playground-eus1/providers/Microsoft.Network/loadBalancers/kubernetes"
-  scope      = "${azurerm_kubernetes_cluster.aks.node_resource_group_id}/providers/Microsoft.Network/loadBalancers/kubernetes"
+  scope = "${azurerm_kubernetes_cluster.aks.node_resource_group_id}/providers/Microsoft.Network/loadBalancers/kubernetes"
   #scope      = data.azurerm_resources.aks_default_lb.resources.0.id
   lock_level = "CanNotDelete"
   notes      = "This lock prevents deletion of the AKS default load balancer"
@@ -128,14 +132,14 @@ resource "azurerm_kubernetes_cluster_node_pool" "node_pools" {
 }
 
 data "azurerm_resources" "aks_nsg" {
-  count      = var.lock_resources ? 1 : 0
+  count               = var.lock_resources ? 1 : 0
   resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group
   type                = "Microsoft.Network/networkSecurityGroups"
 }
 
 resource "azurerm_management_lock" "aks_nsg_lock" {
-  count      = var.lock_resources ? 1 : 0
-  name       = "${var.cluster_name}-nsg-lock"
+  count = var.lock_resources ? 1 : 0
+  name  = "${var.cluster_name}-nsg-lock"
   #"/subscriptions/fdacd616-05ae-42d7-aa8b-ac3d67249b0a/resourceGroups/mc_k-playground-eus1/providers/Microsoft.Network/networkSecurityGroups/aks-agentpool-22949909-nsg"
   scope      = data.azurerm_resources.aks_nsg[0].resources.0.id
   lock_level = "CanNotDelete" # Other option is "ReadOnly"
