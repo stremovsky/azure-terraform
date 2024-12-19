@@ -309,29 +309,28 @@ resource "azurerm_management_lock" "lb_public_ip_lock" {
 }
 
 # Create Bastion host - not used
-module "bastion" {
-  count               = var.enable_bastion ? 1 : 0
-  source              = "./modules/bastion"
-  bastion_name        = local.bastion_name
-  tags                = var.default_tags
-  resource_group_name = data.azurerm_resource_group.aks_rg.name
-  location            = data.azurerm_resource_group.aks_rg.location
-
-  # Networking
-  vnet_subnet_id = module.vnet.bastion_subnet_id
-}
+#module "bastion" {
+#  count               = var.enable_bastion ? 1 : 0
+#  source              = "./modules/bastion"
+#  bastion_name        = local.bastion_name
+#  tags                = var.default_tags
+#  resource_group_name = data.azurerm_resource_group.aks_rg.name
+#  location            = data.azurerm_resource_group.aks_rg.location
+#  # Networking
+#  vnet_subnet_id = module.vnet.bastion_subnet_id
+#}
 
 # Allow SSH, ICMP - not used
-module "nsg" {
-  count                        = var.enable_nsg ? 1 : 0
-  source                       = "./modules/nsg"
-  resourse_name                = local.nsg_resourse_name
-  tags                         = var.default_tags
-  resource_group_name          = data.azurerm_resource_group.aks_rg.name
-  aks_node_resource_group_name = module.aks_cluster[0].node_resource_group
-  location                     = data.azurerm_resource_group.aks_rg.location
-  aks_subnet_id                = module.vnet.aks_subnet_id
-}
+#module "nsg" {
+#  count                        = var.enable_nsg ? 1 : 0
+#  source                       = "./modules/nsg"
+#  resourse_name                = local.nsg_resourse_name
+#  tags                         = var.default_tags
+#  resource_group_name          = data.azurerm_resource_group.aks_rg.name
+#  aks_node_resource_group_name = module.aks_cluster[0].node_resource_group
+#  location                     = data.azurerm_resource_group.aks_rg.location
+#  aks_subnet_id                = module.vnet.aks_subnet_id
+#}
 
 # Wait for RBAC propagation
 # resource "time_sleep" "wait_60s" {
