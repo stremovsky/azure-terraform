@@ -308,40 +308,6 @@ resource "azurerm_management_lock" "lb_public_ip_lock" {
   notes      = "This lock prevents accidental deletion of the public IP"
 }
 
-# Create Bastion host - not used
-#module "bastion" {
-#  count               = var.enable_bastion ? 1 : 0
-#  source              = "./modules/bastion"
-#  bastion_name        = local.bastion_name
-#  tags                = var.default_tags
-#  resource_group_name = data.azurerm_resource_group.aks_rg.name
-#  location            = data.azurerm_resource_group.aks_rg.location
-#  # Networking
-#  vnet_subnet_id = module.vnet.bastion_subnet_id
-#}
-
-# Allow SSH, ICMP - not used
-#module "nsg" {
-#  count                        = var.enable_nsg ? 1 : 0
-#  source                       = "./modules/nsg"
-#  resourse_name                = local.nsg_resourse_name
-#  tags                         = var.default_tags
-#  resource_group_name          = data.azurerm_resource_group.aks_rg.name
-#  aks_node_resource_group_name = module.aks_cluster[0].node_resource_group
-#  location                     = data.azurerm_resource_group.aks_rg.location
-#  aks_subnet_id                = module.vnet.aks_subnet_id
-#}
-
-# Wait for RBAC propagation
-# resource "time_sleep" "wait_60s" {
-#   create_duration = "60s"
-#   depends_on = [
-#     module.identity.workload_identity_client_id,
-#     module.aks_cluster[0].aks_version,
-#     data.azurerm_resources.dns
-#   ]
-# }
-
 module "custom" {
   source                   = "./modules/custom"
   count                    = var.ep_enabled ? 1 : 0
@@ -404,5 +370,28 @@ resource "null_resource" "setup_ep" {
   }
   provisioner "local-exec" {
     command = "./setup-ep.sh"
+  }
+}
+
+resource "null_resource" "uninstall_ep" {
+  depends_on = [null_resource.setup_infra]
+  count      = var.ep_enabled ? 0 : 1
+  triggers = {
+    //always_run = timestamp()
+    infrastructure_hash = sha256(join("", [
+      var.ep_enabled ? module.custom[0].workload_identity_client_id : "null",
+      var.aks_enabled ? module.aks_cluster[0].oidc_issuer_url : "null",
+      data.azurerm_client_config.current.tenant_id,
+      data.azurerm_client_config.current.object_id,
+      data.azurerm_resources.dns.resources.0.id,
+      module.identity.workload_identity_client_id,
+      module.aks_cluster[0].aks_version,
+      module.aks_cluster[0].aks_host,
+      module.keyvault.key_vault_uri,
+      module.keyvault.key_vault_id
+    ]))
+  }
+  provisioner "local-exec" {
+    command = "./uninstall-ep.sh"
   }
 }
