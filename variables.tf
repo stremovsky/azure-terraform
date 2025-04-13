@@ -134,7 +134,6 @@ variable "region_name" {
 
 variable "whitelabel" {}
 variable "whitelabel_short" {}
-variable "acme_email" {}
 variable "aks_nodes_subnet_cidr" {}
 variable "aks_pods_subnet_cidr" {}
 variable "aks_services_subnet_cidr" {}

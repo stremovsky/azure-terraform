@@ -9,16 +9,21 @@ resource "azurerm_container_registry" "acr" {
   tags                = var.tags
 }
 
-# Load existing container registry
-data "azurerm_resources" "registry" {
-  resource_group_name = var.resource_group_name
+data "azurerm_container_registry" "existing_registry" {
+  count               = var.create_registry ? 0 : 1
   name                = var.registry_name
-  type                = "Microsoft.ContainerRegistry/registries"
+  resource_group_name = var.resource_group_name
+}
+
+# Local to safely select ACR ID
+locals {
+  acr_id = var.create_registry ? azurerm_container_registry.acr[0].id : data.azurerm_container_registry.existing_registry[0].id
 }
 
 # Add read access to container registry to kubelet identity
 resource "azurerm_role_assignment" "acr_pull" {
   principal_id         = var.aks_kubelet_identity_id
   role_definition_name = "AcrPull"
-  scope                = data.azurerm_resources.registry.resources.0.id
+  scope                = local.acr_id
+  #scope                = (var.create_registry == 1) ? azurerm_container_registry.acr[0].id : data.azurerm_container_registry.existing_registry[0].id
 }

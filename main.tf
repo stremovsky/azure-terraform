@@ -241,6 +241,12 @@ module "kv_private_dns_zone" {
 }
 */
 
+resource "azurerm_private_dns_zone" "keyvault_dns_zone" {
+  count = length(data.azurerm_resources.dns.resources) == 0 ? 1 : 0
+  name                = "privatelink.vaultcore.azure.net"
+  resource_group_name  = length(var.vnet_resource_group_name) > 0 ? var.vnet_resource_group_name : data.azurerm_resource_group.aks_rg.name
+}
+
 # Create Private Endpoint for Key Vault
 module "keyvault_private_endpoint" {
   source  = "claranet/private-endpoint/azurerm"
@@ -268,7 +274,8 @@ module "keyvault_private_endpoint" {
   #private_dns_zones_names     = ["privatelink.vaultcore.azure.net"]
   #private_dns_zones_vnets_ids = [module.vnet.vnet_id]
   #private_dns_zones_ids = [length(data.azurerm_resources.dns.resources) == 0 ? module.kv_private_dns_zone[0].private_dns_zone_id : data.azurerm_resources.dns.resources.0.id]
-  private_dns_zones_ids = [data.azurerm_resources.dns.resources.0.id]
+  #private_dns_zones_ids = [data.azurerm_resources.dns.resources.0.id]
+  private_dns_zones_ids = [length(data.azurerm_resources.dns.resources) == 0 ? resource.azurerm_private_dns_zone.keyvault_dns_zone[0].id : data.azurerm_resources.dns.resources.0.id]
   #private_dns_zones_ids = [module.kv_private_dns_zone[0].private_dns_zone_id]
 }
 
@@ -337,7 +344,7 @@ resource "null_resource" "setup_infra" {
       var.aks_enabled ? module.aks_cluster[0].oidc_issuer_url : "null",
       data.azurerm_client_config.current.tenant_id,
       data.azurerm_client_config.current.object_id,
-      data.azurerm_resources.dns.resources.0.id,
+      (length(data.azurerm_resources.dns.resources) == 0) ? resource.azurerm_private_dns_zone.keyvault_dns_zone[0].id : data.azurerm_resources.dns.resources.0.id,
       module.identity.workload_identity_client_id,
       module.aks_cluster[0].aks_version,
       module.aks_cluster[0].aks_host,
@@ -360,7 +367,7 @@ resource "null_resource" "setup_ep" {
       var.aks_enabled ? module.aks_cluster[0].oidc_issuer_url : "null",
       data.azurerm_client_config.current.tenant_id,
       data.azurerm_client_config.current.object_id,
-      data.azurerm_resources.dns.resources.0.id,
+      (length(data.azurerm_resources.dns.resources) == 0) ? resource.azurerm_private_dns_zone.keyvault_dns_zone[0].id : data.azurerm_resources.dns.resources.0.id,
       module.identity.workload_identity_client_id,
       module.aks_cluster[0].aks_version,
       module.aks_cluster[0].aks_host,
@@ -383,7 +390,7 @@ resource "null_resource" "uninstall_ep" {
       var.aks_enabled ? module.aks_cluster[0].oidc_issuer_url : "null",
       data.azurerm_client_config.current.tenant_id,
       data.azurerm_client_config.current.object_id,
-      data.azurerm_resources.dns.resources.0.id,
+      (length(data.azurerm_resources.dns.resources) == 0) ? resource.azurerm_private_dns_zone.keyvault_dns_zone[0].id : data.azurerm_resources.dns.resources.0.id,
       module.identity.workload_identity_client_id,
       module.aks_cluster[0].aks_version,
       module.aks_cluster[0].aks_host,
