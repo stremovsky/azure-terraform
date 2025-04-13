@@ -75,7 +75,7 @@ variable "vnet_resource_group_name" {
 
 variable "registry_name" {
   type    = string
-  default = "registry1"
+  default = "jregistry1"
 }
 
 variable "registry_resource_group_name" {
