@@ -21,6 +21,16 @@ aks-default-14134004-vmss000000   Ready    <none>   14m   v1.29.15
 kubectl node-shell aks-default-14134004-vmss000000
 ```
 
+## Virtualization
+```
+apt update
+apt install -y qemu-system-x86
+
+lsmod | grep kvm
+kvm_intel             372736  0
+kvm                  1036288  1 kvm_intel
+```
+
 ## Helm
 ```
 brew install helm
