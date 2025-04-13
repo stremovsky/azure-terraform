@@ -3,6 +3,11 @@
 List of user directories (or tenants):
 - https://portal.azure.com/#settings/directory
 
+Use the following command to connect to specific tenant:
+```
+az login --tenant 1d89b2e7-8369-4e1a-a379-d0959581d94b
+```
+
 ## Helm
 ```
 brew install helm
