@@ -1,3 +1,7 @@
+## Sign in
+
+List of user directories (or tenants):
+- https://portal.azure.com/#settings/directory
 
 ## Helm
 ```
