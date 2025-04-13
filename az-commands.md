@@ -7,6 +7,19 @@ Use the following command to connect to specific tenant:
 ```
 az login --tenant 1d89b2e7-8369-4e1a-a379-d0959581d94b
 ```
+## Kubectl node shell
+
+```
+brew install krew
+kubectl krew install node-shell
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+kubectl get nodes -A
+NAME                              STATUS   ROLES    AGE   VERSION
+aks-default-14134004-vmss000000   Ready    <none>   14m   v1.29.15
+
+kubectl node-shell aks-default-14134004-vmss000000
+```
 
 ## Helm
 ```
