@@ -3,7 +3,7 @@
 WORKSPACE=$(terraform workspace show)
 
 if [ "$WORKSPACE" == "default" ]; then
-  WORKSPACE="dev-eus1"
+  WORKSPACE="testing-eus1"
 fi
 
 echo "workspace: $WORKSPACE"
