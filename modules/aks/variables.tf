@@ -184,7 +184,7 @@ variable "identity" {
 
 variable "kubernetes_version" {
   type    = string
-  default = "1.29"
+  default = "1.31"
 }
 
 variable "lock_resources" {

@@ -111,7 +111,8 @@ variable "max_count" {
 variable "system_vm_size" {
   description = "VM size for the nodes in the default node pool"
   type        = string
-  default     = "Standard_D2ps_v5" # 2 vCPU 8GB RAM
+  #default     = "Standard_D2ps_v5" # 2 vCPU 8GB RAM, p - Arm64
+  default     = "Standard_D2d_v4" # 2 vCPU 8GB RAM, p - Arm64
 }
 
 variable "default_tags" {
@@ -146,7 +147,7 @@ variable "create_registry" {
 
 variable "kubernetes_version" {
   type    = string
-  default = "1.29"
+  default = "1.31"
 }
 
 variable "aks_node_groups" {

@@ -216,7 +216,7 @@ resource "azurerm_management_lock" "keyvalt_lock" {
 
 data "azurerm_resources" "dns" {
   name                = "privatelink.vaultcore.azure.net"
-  resource_group_name = length(var.vnet_resource_group_name) > 0 ? var.vnet_resource_group_name : data.azurerm_resource_group.aks_rg.name
+  resource_group_name = var.vnet_resource_group_name
   type                = "Microsoft.Network/privateDnsZones"
 }
 
